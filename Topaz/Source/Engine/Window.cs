@@ -10,7 +10,8 @@ namespace Topaz.Engine
         const int DEFAULT_WINDOW_WIDTH = 1280;
         const int DEFAULT_WINDOW_HEIGHT = 800;
 
-        GraphicsDeviceManager graphics;
+        public GraphicsDeviceManager Graphics { get; private set; }
+        public GraphicsDevice GraphicsDevice { get; private set; }
 
         public WindowState State { get; set; }
 
@@ -28,7 +29,8 @@ namespace Topaz.Engine
 
         public void Initialize(Game game, GraphicsDeviceManager graphics)
         {
-            this.graphics = graphics;
+            this.Graphics = graphics;
+            this.GraphicsDevice = game.GraphicsDevice;
 
             string title = Properties.Resources.Title;
             if (Properties.Resources.DevMode == "true")
@@ -64,28 +66,32 @@ namespace Topaz.Engine
 
             if (Engine.Input.Instance.IsKeyDown(Keys.LeftControl) && Engine.Input.Instance.IsKeyDown(Keys.Enter))
             {
-                if (graphics.IsFullScreen)
+                if (Graphics.IsFullScreen)
                 {
-                    graphics.PreferredBackBufferWidth = DEFAULT_WINDOW_WIDTH;
-                    graphics.PreferredBackBufferHeight = DEFAULT_WINDOW_HEIGHT;
+                    Graphics.PreferredBackBufferWidth = DEFAULT_WINDOW_WIDTH;
+                    Graphics.PreferredBackBufferHeight = DEFAULT_WINDOW_HEIGHT;
                 }
                 else
                 {
-                    graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-                    graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+                    Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                    Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
                 }
 
-                graphics.IsFullScreen = !graphics.IsFullScreen;
-                graphics.ApplyChanges();
+                Graphics.IsFullScreen = !Graphics.IsFullScreen;
+                Graphics.ApplyChanges();
             }
 
-            //GameState.Instance.Viewport = GraphicsDevice.Viewport;
             Scene.SceneManager.Instance.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
             Scene.SceneManager.Instance.Draw(gameTime);
+        }
+
+        public Viewport GetViewport()
+        {
+            return GraphicsDevice.Viewport;
         }
     }
 }

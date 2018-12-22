@@ -26,7 +26,7 @@ namespace Topaz.Interface
 
         public void Update(GameTime gameTime)
         {
-            //Rectangle viewport = state.Viewport.Bounds;
+            Rectangle viewport = Engine.Window.Instance.GetViewport().Bounds;
             MouseState mouse = Mouse.GetState();
             GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
 
@@ -34,7 +34,7 @@ namespace Topaz.Interface
 
             debugInfo = "Video\n";
             debugInfo += " FPS: " + fps + "\n";
-            //debugInfo += " Width: " + viewport.Width + " Height: " + viewport.Height + "\n";
+            debugInfo += " Width: " + viewport.Width + " Height: " + viewport.Height + "\n";
             debugInfo += "Input\n";
             debugInfo += " Mouse Pos: x: " + mouse.Position.ToString() + "\n";
             debugInfo += " Mouse Input: LB: " + mouse.LeftButton + ", RB: " + mouse.RightButton + "\n";

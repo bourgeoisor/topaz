@@ -32,7 +32,6 @@ namespace Topaz.Scene
 
         public void UnloadContent()
         {
-
         }
 
         public void Update(GameTime gameTime)
