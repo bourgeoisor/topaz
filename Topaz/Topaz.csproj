@@ -49,7 +49,9 @@
     </Compile>
     <Compile Include="Source\Engine\Content.cs" />
     <Compile Include="Source\Engine\Input.cs" />
+    <Compile Include="Source\Engine\Window.cs" />
     <Compile Include="Source\Interface\DebugInfo.cs" />
+    <Compile Include="Source\Scene\SceneManager.cs" />
     <Compile Include="Topaz.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

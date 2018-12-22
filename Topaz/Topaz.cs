@@ -6,17 +6,7 @@ namespace Topaz
 {
     public class Topaz : Game
     {
-        const string GAME_TITLE = "Topaz";
-        const string VERSION = "v.0.0.1";
-        const bool DEV_MODE = true;
-
-        const int DEFAULT_WINDOW_WIDTH = 800;
-        const int DEFAULT_WINDOW_HEIGHT = 600;
-
         GraphicsDeviceManager graphics;
-
-        //Map map;
-        Interface.DebugInfo debugInfo;
 
         public Topaz()
         {
@@ -26,67 +16,29 @@ namespace Topaz
 
         protected override void Initialize()
         {
-            Window.Title = GAME_TITLE + " " + VERSION + "-" + Properties.Resources.GitCount + "-" + Properties.Resources.GitHash;
-            Window.AllowUserResizing = true;
-            IsMouseVisible = true;
-
-            graphics.PreferredBackBufferWidth = DEFAULT_WINDOW_WIDTH;
-            graphics.PreferredBackBufferHeight = DEFAULT_WINDOW_HEIGHT;
-            graphics.ApplyChanges();
-
-            //map = new Map();
-            debugInfo = new Interface.DebugInfo();
+            Engine.Window.Instance.Initialize(this, graphics);
+            Engine.Content.Instance.Initialize(this, graphics);
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            Engine.Content.Instance.Graphics = graphics;
-            Engine.Content.Instance.GraphicsDevice = GraphicsDevice;
-            Engine.Content.Instance.SpriteBatch = new SpriteBatch(GraphicsDevice);
-            Engine.Content.Instance.ContentManager = this.Content;
             Engine.Content.Instance.LoadContent();
-
-            //map.LoadContent();
+            Engine.Window.Instance.LoadContent();
         }
 
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            Engine.Window.Instance.UnloadContent();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Engine.Window.Instance.State == Engine.Window.WindowState.Terminating)
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.Enter))
-            {
-                if (graphics.IsFullScreen)
-                {
-                    graphics.PreferredBackBufferWidth = DEFAULT_WINDOW_WIDTH;
-                    graphics.PreferredBackBufferHeight = DEFAULT_WINDOW_HEIGHT;
-                }
-                else
-                {
-                    graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-                    graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-                }
-
-                graphics.IsFullScreen = !graphics.IsFullScreen;
-                graphics.ApplyChanges();
-            }
-
-            if (Engine.Input.Instance.IsKeyPressed(Keys.F1))
-                debugInfo.Toggle();
-
-            //GameState.Instance.Viewport = GraphicsDevice.Viewport;
-
-            //map.Update(gameTime);
-            debugInfo.Update(gameTime);
-
-            Engine.Input.Instance.Update(gameTime);
+            Engine.Window.Instance.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -95,8 +47,7 @@ namespace Topaz
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            //map.Draw(gameTime);
-            debugInfo.Draw(gameTime);
+            Engine.Window.Instance.Draw(gameTime);
 
             base.Draw(gameTime);
         }

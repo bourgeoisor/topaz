@@ -8,23 +8,15 @@ namespace Topaz.Engine
 {
     public sealed class Content
     {
-        ContentManager contentManager;
-        GraphicsDeviceManager graphics;
-        GraphicsDevice graphicsDevice;
-        SpriteBatch spriteBatch;
+        public ContentManager ContentManager { get; private set; }
+        public GraphicsDeviceManager Graphics { get; private set; }
+        public GraphicsDevice GraphicsDevice { get; private set; }
+        public SpriteBatch SpriteBatch { get; private set; }
 
-        SpriteFont font;
-        Texture2D blackPixel;
+        public SpriteFont Font { get; private set; }
+        public Texture2D BlackPixel { get; private set; }
 
         Dictionary<string, Texture2D> loadedTextures;
-
-        public ContentManager ContentManager { get => contentManager; set => contentManager = value; }
-        public GraphicsDeviceManager Graphics { get => graphics; set => graphics = value; }
-        public GraphicsDevice GraphicsDevice { get => graphicsDevice; set => graphicsDevice = value; }
-        public SpriteBatch SpriteBatch { get => spriteBatch; set => spriteBatch = value; }
-
-        public SpriteFont Font { get => font; }
-        public Texture2D BlackPixel { get => blackPixel; }
 
         private static readonly Lazy<Content> lazy =
             new Lazy<Content>(() => new Content());
@@ -36,19 +28,27 @@ namespace Topaz.Engine
             loadedTextures = new Dictionary<string, Texture2D>();
         }
 
+        public void Initialize(Game game, GraphicsDeviceManager graphics)
+        {
+            this.Graphics = graphics;
+            this.GraphicsDevice = game.GraphicsDevice;
+            this.SpriteBatch = new SpriteBatch(game.GraphicsDevice);
+            this.ContentManager = game.Content;
+        }
+
         public void LoadContent()
         {
-            font = contentManager.Load<SpriteFont>("Font/VeraMono");
+            Font = ContentManager.Load<SpriteFont>("Font/VeraMono");
 
-            blackPixel = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            blackPixel.SetData<Color>(new Color[] { Color.Black });
+            BlackPixel = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            BlackPixel.SetData<Color>(new Color[] { Color.Black });
         }
 
         public Texture2D GetTexture(string path)
         {
             if (!loadedTextures.ContainsKey(path))
             {
-                loadedTextures.Add(path, contentManager.Load<Texture2D>(path));
+                loadedTextures.Add(path, ContentManager.Load<Texture2D>(path));
             }
 
             return loadedTextures[path];

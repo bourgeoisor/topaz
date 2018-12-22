@@ -61,7 +61,16 @@ namespace Topaz.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 3
+        ///   Looks up a localized string similar to true.
+        /// </summary>
+        internal static string DevMode {
+            get {
+                return ResourceManager.GetString("DevMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4
         ///.
         /// </summary>
         internal static string GitCount {
@@ -71,12 +80,30 @@ namespace Topaz.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to e7b8a
+        ///   Looks up a localized string similar to f5499438
         ///.
         /// </summary>
         internal static string GitHash {
             get {
                 return ResourceManager.GetString("GitHash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Topaz.
+        /// </summary>
+        internal static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to v0.0.1.
+        /// </summary>
+        internal static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
     }
