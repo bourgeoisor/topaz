@@ -7,7 +7,8 @@ namespace Topaz
     public class Topaz : Game
     {
         const string GAME_TITLE = "Topaz";
-        const string VERSION = "Dev v.0.0.1";
+        const string VERSION = "v.0.0.1";
+        const bool DEV_MODE = true;
 
         const int DEFAULT_WINDOW_WIDTH = 800;
         const int DEFAULT_WINDOW_HEIGHT = 600;
@@ -25,7 +26,7 @@ namespace Topaz
 
         protected override void Initialize()
         {
-            Window.Title = GAME_TITLE + " - " + VERSION;
+            Window.Title = GAME_TITLE + " " + VERSION + "-" + Properties.Resources.GitCount + "-" + Properties.Resources.GitHash;
             Window.AllowUserResizing = true;
             IsMouseVisible = true;
 
