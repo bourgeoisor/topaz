@@ -4,78 +4,98 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Topaz
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
     public class Topaz : Game
     {
+        const string GAME_TITLE = "Topaz";
+        const string VERSION = "Dev v.0.0.1";
+
+        const int DEFAULT_WINDOW_WIDTH = 800;
+        const int DEFAULT_WINDOW_HEIGHT = 600;
+
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        
+
+        //Map map;
+        Interface.DebugInfo debugInfo;
+
         public Topaz()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            Window.Title = GAME_TITLE + " - " + VERSION;
+            Window.AllowUserResizing = true;
+            IsMouseVisible = true;
+
+            graphics.PreferredBackBufferWidth = DEFAULT_WINDOW_WIDTH;
+            graphics.PreferredBackBufferHeight = DEFAULT_WINDOW_HEIGHT;
+            graphics.ApplyChanges();
+
+            //map = new Map();
+            debugInfo = new Interface.DebugInfo();
 
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            Engine.Content.Instance.Graphics = graphics;
+            Engine.Content.Instance.GraphicsDevice = GraphicsDevice;
+            Engine.Content.Instance.SpriteBatch = new SpriteBatch(GraphicsDevice);
+            Engine.Content.Instance.ContentManager = this.Content;
+            Engine.Content.Instance.LoadContent();
 
-            // TODO: use this.Content to load your game content here
+            //map.LoadContent();
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.Enter))
+            {
+                if (graphics.IsFullScreen)
+                {
+                    graphics.PreferredBackBufferWidth = DEFAULT_WINDOW_WIDTH;
+                    graphics.PreferredBackBufferHeight = DEFAULT_WINDOW_HEIGHT;
+                }
+                else
+                {
+                    graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                    graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+                }
+
+                graphics.IsFullScreen = !graphics.IsFullScreen;
+                graphics.ApplyChanges();
+            }
+
+            if (Engine.Input.Instance.IsKeyPressed(Keys.F1))
+                debugInfo.Toggle();
+
+            //GameState.Instance.Viewport = GraphicsDevice.Viewport;
+
+            //map.Update(gameTime);
+            debugInfo.Update(gameTime);
+
+            Engine.Input.Instance.Update(gameTime);
 
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            //map.Draw(gameTime);
+            debugInfo.Draw(gameTime);
 
             base.Draw(gameTime);
         }
