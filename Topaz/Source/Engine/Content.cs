@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Topaz.Engine
 {
@@ -38,7 +39,7 @@ namespace Topaz.Engine
 
         public void LoadContent()
         {
-            Font = ContentManager.Load<SpriteFont>("Font/VeraMono");
+            Font = ContentManager.Load<SpriteFont>("Font/VeraMono14");
 
             BlackPixel = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             BlackPixel.SetData<Color>(new Color[] { Color.Black });
@@ -52,6 +53,20 @@ namespace Topaz.Engine
             }
 
             return loadedTextures[path];
+        }
+
+        public void DrawStringOutline(SpriteFont spriteFont, string text, Vector2 position, Color colorBg, Color colorFg, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
+        {
+            Vector2 positionTL = new Vector2(position.X - 1, position.Y - 1);
+            Vector2 positionBL = new Vector2(position.X - 1, position.Y + 1);
+            Vector2 positionTR = new Vector2(position.X + 1, position.Y - 1);
+            Vector2 positionBR = new Vector2(position.X + 1, position.Y + 1);
+            
+            SpriteBatch.DrawString(spriteFont, text, positionTL, colorBg, 0, origin, scale, effects, layerDepth);
+            SpriteBatch.DrawString(spriteFont, text, positionBL, colorBg, 0, origin, scale, effects, layerDepth);
+            SpriteBatch.DrawString(spriteFont, text, positionTR, colorBg, 0, origin, scale, effects, layerDepth);
+            SpriteBatch.DrawString(spriteFont, text, positionBR, colorBg, 0, origin, scale, effects, layerDepth);
+            SpriteBatch.DrawString(spriteFont, text, position, colorFg, 0, origin, scale, effects, layerDepth);
         }
     }
 }

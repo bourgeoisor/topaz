@@ -7,21 +7,20 @@ namespace Topaz.Interface
 {
     class DebugInfo
     {
-        const int POSITION_X = 10;
-        const int POSITION_Y = 10;
-        const int PADDING = 10;
+        const int POSITION_X = 20;
+        const int POSITION_Y = 20;
 
         //GameState state;
         Engine.Content graphicsContent;
         string debugInfo;
-        bool show;
+        bool display;
 
         public DebugInfo()
         {
             //state = GameState.Instance;
             graphicsContent = Engine.Content.Instance;
             debugInfo = "";
-            show = false;
+            display = false;
         }
 
         public void Update(GameTime gameTime)
@@ -34,36 +33,29 @@ namespace Topaz.Interface
 
             debugInfo = "Video\n";
             debugInfo += " FPS: " + fps + "\n";
-            debugInfo += " Width: " + viewport.Width + " Height: " + viewport.Height + "\n";
+            debugInfo += " Width: " + viewport.Width + ", Height: " + viewport.Height + "\n";
             debugInfo += "Input\n";
-            debugInfo += " Mouse Pos: x: " + mouse.Position.ToString() + "\n";
-            debugInfo += " Mouse Input: LB: " + mouse.LeftButton + ", RB: " + mouse.RightButton + "\n";
-            debugInfo += " GamePad: A: " + (gamePad.Buttons.A == ButtonState.Pressed) + ", B: " + (gamePad.Buttons.B == ButtonState.Pressed) + "\n";
-            debugInfo += " GamePad LS: " + gamePad.ThumbSticks.Left.ToString() + "\n";
-            debugInfo += " GamePad RS: " + gamePad.ThumbSticks.Right.ToString() + "\n";
-            debugInfo += "Player\n";
+            debugInfo += " Mouse Coords: " + mouse.Position.ToString() + "\n";
+            //debugInfo += "Player\n";
             //debugInfo += " Coordinates: " + state.Player.GetCoordinates();
         }
 
         public void Draw(GameTime gameTime)
         {
-            if (show)
+            if (display)
             {
-                Vector2 stringRectangle = graphicsContent.Font.MeasureString(debugInfo);
-                Vector2 textMiddlePoint = new Vector2(0, 0);
-                Vector2 textPosition = new Vector2(POSITION_X + PADDING, POSITION_Y + PADDING);
-                Rectangle panelRectangle = new Rectangle(POSITION_X, POSITION_Y, (int)stringRectangle.X + 2 * PADDING, (int)stringRectangle.Y + 2 * PADDING);
+                Vector2 origin = new Vector2(0, 0);
+                Vector2 position = new Vector2(POSITION_X, POSITION_Y);
 
                 graphicsContent.SpriteBatch.Begin();
-                graphicsContent.SpriteBatch.Draw(graphicsContent.BlackPixel, panelRectangle, null, Color.White * 0.5f);
-                graphicsContent.SpriteBatch.DrawString(graphicsContent.Font, debugInfo, textPosition, Color.White, 0, textMiddlePoint, 1.0f, SpriteEffects.None, 0.5f);
+                graphicsContent.DrawStringOutline(graphicsContent.Font, debugInfo, position, Color.Black, Color.White, 0, origin, 1.0f, SpriteEffects.None, 0.5f);
                 graphicsContent.SpriteBatch.End();
             }
         }
 
         public void Toggle()
         {
-            show = !show;
+            display = !display;
         }
     }
 }

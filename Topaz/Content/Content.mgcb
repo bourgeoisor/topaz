@@ -20,3 +20,10 @@
 /processorParam:TextureFormat=Compressed
 /build:Font/VeraMono.spritefont
 
+#begin Font/VeraMono14.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Font/VeraMono14.spritefont
+
