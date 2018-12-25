@@ -118,16 +118,6 @@ namespace Topaz.Scene
                 Networking.Client.Instance.SendMapChange((int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X));
             }
 
-            //if (Engine.Input.Instance.IsKeyPressed(Keys.F2))
-            //{
-            //    Networking.Server.Instance.Initialize();
-            //}
-
-            //if (Engine.Input.Instance.IsKeyPressed(Keys.F3))
-            //{
-            //    Networking.Client.Instance.Initialize();
-            //}
-
             if (deltaX != 0 || deltaY != 0)
                 client.SendPlayerMove();
         }
@@ -190,7 +180,9 @@ namespace Topaz.Scene
                     {
                         Vector2 positiona = new Vector2(origin.X + i * (TILE_WIDTH * SCALE) - client.Player.Position.X, origin.Y + j * (TILE_WIDTH * SCALE) - client.Player.Position.Y);
                         DrawTile(client.Map.Map2[j, i], positiona);
-                        DrawTile(11, positiona);
+
+                        if (SceneManager.Instance.DisplayBoundaries)
+                            DrawTile(11, positiona);
                     }
                 }
             }
@@ -207,7 +199,8 @@ namespace Topaz.Scene
                 Vector2 pos = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
                 Engine.Content.Instance.SpriteBatch.Draw(client.Player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), WorldScene.SCALE, SpriteEffects.None, 0f);
                 Vector2 post = new Vector2(pos.X - 16 * 2, pos.Y - 16 * 2);
-                DrawTile(11, post);
+                if (SceneManager.Instance.DisplayBoundaries)
+                    DrawTile(11, post);
             }
 
             foreach (Mob.Player player in client.Players.Values)
@@ -218,7 +211,8 @@ namespace Topaz.Scene
                 Vector2 pos = new Vector2(origin.X + player.Position.X - client.Player.Position.X, origin.Y + player.Position.Y - client.Player.Position.Y);
                 Engine.Content.Instance.SpriteBatch.Draw(player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), WorldScene.SCALE, SpriteEffects.None, 0f);
                 Vector2 post = new Vector2(pos.X - 16 * 2, pos.Y - 16 * 2);
-                DrawTile(11, post);
+                if (SceneManager.Instance.DisplayBoundaries)
+                    DrawTile(11, post);
             }
             
 

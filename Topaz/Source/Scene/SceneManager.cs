@@ -8,14 +8,13 @@ namespace Topaz.Scene
     {
         Interface.DebugInfo debugInfo;
 
-        private WorldScene world;
-
         private static readonly Lazy<SceneManager> lazy =
             new Lazy<SceneManager>(() => new SceneManager());
 
         public static SceneManager Instance { get { return lazy.Value; } }
 
-        internal WorldScene World { get => world; set => world = value; }
+        internal WorldScene World { get; set; }
+        public bool DisplayBoundaries { get; set; }
 
         private SceneManager()
         {
@@ -23,8 +22,10 @@ namespace Topaz.Scene
 
         public void Initialize()
         {
-            world = new WorldScene();
-            debugInfo = new Interface.DebugInfo(world);
+            World = new WorldScene();
+            debugInfo = new Interface.DebugInfo(World);
+
+            DisplayBoundaries = false;
 
             // @todo: Move this
             // @todo: Do in separate thread to not block drawing
@@ -35,7 +36,7 @@ namespace Topaz.Scene
 
         public void LoadContent()
         {
-            world.LoadContent();
+            World.LoadContent();
         }
 
         public void UnloadContent()
@@ -47,15 +48,18 @@ namespace Topaz.Scene
             if (Engine.Input.Instance.IsKeyPressed(Keys.F1))
                 debugInfo.Toggle();
 
+            if (Engine.Input.Instance.IsKeyPressed(Keys.F2))
+                DisplayBoundaries = !DisplayBoundaries;
+
             Networking.Client.Instance.HandleMessages();
 
-            world.Update(gameTime);
+            World.Update(gameTime);
             debugInfo.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-            world.Draw(gameTime);
+            World.Draw(gameTime);
             debugInfo.Draw(gameTime);
         }
     }
