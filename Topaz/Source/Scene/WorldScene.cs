@@ -103,13 +103,25 @@ namespace Topaz.Scene
 
             if (Engine.Input.Instance.LeftButtonDown())
             {
-                client.Map.Map2[(int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X)] = 16 * 14;
-                Networking.Client.Instance.SendMapChange((int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X));
+                int tileX = (int)Math.Floor(GetMouseCoordinates().X);
+                int tileY = (int)Math.Floor(GetMouseCoordinates().Y);
+
+                if (tileX > 0 && tileX < client.Map.Map2.GetLength(1) - 1 && tileY > 0 && tileY < client.Map.Map2.GetLength(0) - 1)
+                {
+                    client.Map.Map2[(int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X)] = 16 * 14;
+                    Networking.Client.Instance.SendMapChange((int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X));
+                }
             }
             else if (Engine.Input.Instance.RightButtonDown())
             {
-                client.Map.Map2[(int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X)] = -1;
-                Networking.Client.Instance.SendMapChange((int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X));
+                int tileX = (int)Math.Floor(GetMouseCoordinates().X);
+                int tileY = (int)Math.Floor(GetMouseCoordinates().Y);
+
+                if (tileX > 0 && tileX < client.Map.Map2.GetLength(1) - 1 && tileY > 0 && tileY < client.Map.Map2.GetLength(0) - 1)
+                {
+                    client.Map.Map2[(int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X)] = -1;
+                    Networking.Client.Instance.SendMapChange((int)Math.Floor(GetMouseCoordinates().Y), (int)Math.Floor(GetMouseCoordinates().X));
+                }
             }
 
             if (deltaX != 0 || deltaY != 0)

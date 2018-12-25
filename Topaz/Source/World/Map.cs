@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Topaz.World
+﻿namespace Topaz.World
 {
     class Map
     {
@@ -17,7 +15,10 @@ namespace Topaz.World
 
         public void GenerateRandom()
         {
-            Map1 = new int[30, 30];
+            int rows = 10;
+            int cols = 15;
+
+            Map1 = new int[rows, cols];
             for (int j = 0; j < Map1.GetLength(0); j++)
             {
                 for (int i = 0; i < Map1.GetLength(1); i++)
@@ -26,13 +27,12 @@ namespace Topaz.World
                 }
             }
 
-            Map2 = new int[30, 30];
-            Random rn = new Random();
+            Map2 = new int[rows, cols];
             for (int j = 0; j < Map2.GetLength(0); j++)
             {
                 for (int i = 0; i < Map2.GetLength(1); i++)
                 {
-                    if (j == 0 || i == 0 || j == Map2.GetLength(0)-1 || i == Map2.GetLength(1)-1 || rn.Next(20) == 0)
+                    if (j == 0 || i == 0 || j == Map2.GetLength(0)-1 || i == Map2.GetLength(1)-1)
                     {
                         Map2[j, i] = 16 * 14;
                     }

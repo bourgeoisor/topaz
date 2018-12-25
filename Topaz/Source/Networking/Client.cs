@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Topaz.Mob;
 using Topaz.World;
 
@@ -15,6 +14,7 @@ namespace Topaz.Networking
         Mob.Player player;
         Dictionary<long, Mob.Player> players;
         string lastMessage;
+        long localId;
 
         private static readonly Lazy<Client> lazy =
             new Lazy<Client>(() => new Client());
@@ -38,12 +38,18 @@ namespace Topaz.Networking
             players = new Dictionary<long, Mob.Player>();
 
             NetPeerConfiguration config = new NetPeerConfiguration(Properties.Resources.Title);
+            config.ConnectionTimeout = 10;
+
             client = new NetClient(config);
             client.Start();
-            client.Connect(host: "127.0.0.1", port: 12345);
         }
 
-        public void Terminate()
+        public void Connect(string host, int port)
+        {
+            client.Connect(host: host, port: port);
+        }
+
+        public void Disconnect()
         {
             client.Disconnect("terminating");
         }
@@ -63,11 +69,12 @@ namespace Topaz.Networking
             NetIncomingMessage msg;
             while ((msg = client.ReadMessage()) != null)
             {
-                Console.Write("From server: ");
                 lastMessage = msg.PeekString() + "(" + msg.SenderConnection?.Status + ")";
+
                 switch (msg.MessageType)
                 {
                     case NetIncomingMessageType.Data:
+                        lastMessage = (MessageType)msg.PeekInt32() + "(" + msg.SenderConnection?.Status + ")";
                         HandleIncomingData(msg);
                         break;
                     case NetIncomingMessageType.StatusChanged:
@@ -77,100 +84,72 @@ namespace Topaz.Networking
                     case NetIncomingMessageType.DebugMessage:
                     case NetIncomingMessageType.WarningMessage:
                     case NetIncomingMessageType.ErrorMessage:
-                        Console.WriteLine(msg.ReadString());
+                        Console.WriteLine(msg.MessageType + ": " + msg.ReadString());
                         break;
                     default:
                         Console.WriteLine("Unhandled type: " + msg.MessageType);
                         break;
                 }
+
                 client.Recycle(msg);
             }
         }
 
-        //public void ClientThread()
-        //{
-        //    Console.WriteLine("Client started...");
-        //    NetIncomingMessage msg;
-        //    while (Engine.Window.Instance.State == Engine.Window.WindowState.Running)
-        //    {
-        //        Thread.Sleep(10);
-        //        Console.WriteLine(client);
-        //        while ((msg = client.ReadMessage()) != null)
-        //        {
-        //            Console.Write("From server: ");
-        //            switch (msg.MessageType)
-        //            {
-        //                case NetIncomingMessageType.Data:
-        //                    HandleIncomingData(msg);
-        //                    break;
-        //                case NetIncomingMessageType.StatusChanged:
-        //                    Console.WriteLine(msg.SenderConnection.Status);
-        //                    break;
-        //                case NetIncomingMessageType.VerboseDebugMessage:
-        //                case NetIncomingMessageType.DebugMessage:
-        //                case NetIncomingMessageType.WarningMessage:
-        //                case NetIncomingMessageType.ErrorMessage:
-        //                    Console.WriteLine(msg.ReadString());
-        //                    break;
-        //                default:
-        //                    Console.WriteLine("Unhandled type: " + msg.MessageType);
-        //                    break;
-        //            }
-        //            client.Recycle(msg);
-        //        }
-        //    }
-        //    Console.WriteLine("Client terminated...");
-        //}
-
         public void HandleIncomingData(NetIncomingMessage msg)
         {
-            string type = msg.ReadString();
+            MessageType type = (MessageType)msg.ReadInt32();
 
-            if (type == "SRV_MAP")
+            if (type == MessageType.ConnectionInfo)
             {
-                int len0 = msg.ReadInt32();
-                int len1 = msg.ReadInt32();
-                map.Map1 = new int[len0, len1];
-                map.Map2 = new int[len0, len1];
-                for (int j = 0; j < map.Map1.GetLength(0); j++)
-                {
-                    for (int i = 0; i < map.Map1.GetLength(1); i++)
-                    {
-                        map.Map1[j, i] = msg.ReadInt32();
-                    }
-                }
-                for (int j = 0; j < map.Map2.GetLength(0); j++)
-                {
-                    for (int i = 0; i < map.Map2.GetLength(1); i++)
-                    {
-                        map.Map2[j, i] = msg.ReadInt32();
-                    }
-                }
+                localId = msg.ReadInt64();
+                players.Add(localId, new Player());
+                player = players[localId];
             }
 
-            if (type == "SRV_NEW_PLAYER")
+            if (type == MessageType.PlayerDisconnected)
+            {
+                long id = msg.ReadInt64();
+                players.Remove(id);
+            }
+
+            if (type == MessageType.MapInfo)
+            {
+                int rows = msg.ReadInt32();
+                int cols = msg.ReadInt32();
+
+                map.Map1 = new int[rows, cols];
+                map.Map2 = new int[rows, cols];
+
+                for (int j = 0; j < rows; j++)
+                    for (int i = 0; i < cols; i++)
+                        map.Map1[j, i] = msg.ReadInt32();
+
+                for (int j = 0; j < rows; j++)
+                    for (int i = 0; i < cols; i++)
+                        map.Map2[j, i] = msg.ReadInt32();
+            }
+
+            if (type == MessageType.PlayerConnected)
             {
                 long id = msg.ReadInt64();
                 float x = msg.ReadFloat();
                 float y = msg.ReadFloat();
 
                 players.Add(id, new Player());
+                players[id].Position = new Vector2(x, y);
             }
 
-            if (type == "SRV_PLAYER_MOVE")
+            if (type == MessageType.PlayerMoved)
             {
                 long id = msg.ReadInt64();
                 float x = msg.ReadFloat();
                 float y = msg.ReadFloat();
 
                 if (players.ContainsKey(id))
-                {
-                    Console.WriteLine("C RECV! " + x + "-" + y);
                     players[id].Position = new Vector2(x, y);
-                }
             }
 
-            if (type == "SRV_MAP_CHANGE")
+            if (type == MessageType.MapChanged)
             {
                 int j = msg.ReadInt32();
                 int i = msg.ReadInt32();
@@ -181,24 +160,37 @@ namespace Topaz.Networking
             
         }
 
+        public NetOutgoingMessage CreateMessage(MessageType type)
+        {
+            NetOutgoingMessage msg = client.CreateMessage();
+            msg.Write((int)type);
+            return msg;
+        }
+
+        public void SendMessage(NetOutgoingMessage msg, NetDeliveryMethod method, int sequenceChannel)
+        {
+            client.SendMessage(msg, method, sequenceChannel);
+        }
+
         public void SendPlayerMove()
         {
-            NetOutgoingMessage nmsg = client.CreateMessage();
-            nmsg.Write("CLT_PLAYER_MOVE");
-            nmsg.Write(player.Position.X);
-            nmsg.Write(player.Position.Y);
-            Console.WriteLine("C SEND! " + player.Position.X + "-" + player.Position.X);
-            client.SendMessage(nmsg, NetDeliveryMethod.ReliableOrdered, 2);
+            NetOutgoingMessage msg = CreateMessage(MessageType.PlayerMoved);
+
+            msg.Write(player.Position.X);
+            msg.Write(player.Position.Y);
+
+            SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 2);
         }
 
         public void SendMapChange(int j, int i)
         {
-            NetOutgoingMessage nmsg = client.CreateMessage();
-            nmsg.Write("CLT_MAP_CHANGE");
-            nmsg.Write(j);
-            nmsg.Write(i);
-            nmsg.Write(map.Map2[j, i]);
-            client.SendMessage(nmsg, NetDeliveryMethod.ReliableOrdered, 3);
+            NetOutgoingMessage msg = CreateMessage(MessageType.MapChanged);
+
+            msg.Write(j);
+            msg.Write(i);
+            msg.Write(map.Map2[j, i]);
+
+            SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 3);
         }
     }
 }

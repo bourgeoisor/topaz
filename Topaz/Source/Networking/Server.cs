@@ -30,8 +30,11 @@ namespace Topaz.Networking
             map.GenerateRandom();
             connections = new Dictionary<long, Networking.Connection>();
 
-            NetPeerConfiguration config = new NetPeerConfiguration(Properties.Resources.Title)
-            { Port = 12345, EnableUPnP = true };
+            NetPeerConfiguration config = new NetPeerConfiguration(Properties.Resources.Title);
+            config.Port = 12345;
+            config.EnableUPnP = true;
+            config.ConnectionTimeout = 10;
+
             server = new NetServer(config);
             server.Start();
 
@@ -62,16 +65,11 @@ namespace Topaz.Networking
                 {
                     switch (msg.MessageType)
                     {
+                        case NetIncomingMessageType.StatusChanged:
+                            HandleStatusChanged(msg);
+                            break;
                         case NetIncomingMessageType.Data:
                             HandleIncomingData(msg);
-                            break;
-                        case NetIncomingMessageType.StatusChanged:
-                            if (msg.SenderConnection.Status == NetConnectionStatus.Connected)
-                            {
-                                connections.Add(msg.SenderConnection.RemoteUniqueIdentifier, new Networking.Connection(msg.SenderConnection));
-                                SendMap(msg.SenderConnection);
-                                SendPlayerInfo(connections[msg.SenderConnection.RemoteUniqueIdentifier]);
-                            }
                             break;
                         case NetIncomingMessageType.VerboseDebugMessage:
                         case NetIncomingMessageType.DebugMessage:
@@ -90,40 +88,38 @@ namespace Topaz.Networking
             Console.WriteLine("Server terminated...");
         }
 
+        public void HandleStatusChanged(NetIncomingMessage msg)
+        {
+            if (msg.SenderConnection.Status == NetConnectionStatus.Connected)
+            {
+                connections.Add(msg.SenderConnection.RemoteUniqueIdentifier, new Networking.Connection(msg.SenderConnection));
+                SendConnectionInfo(msg.SenderConnection);
+                SendMap(msg.SenderConnection);
+                SendPlayerInfo(connections[msg.SenderConnection.RemoteUniqueIdentifier]);
+            }
+
+            if (msg.SenderConnection.Status == NetConnectionStatus.Disconnected)
+            {
+                connections.Remove(msg.SenderConnection.RemoteUniqueIdentifier);
+                SendPlayerDisconnected(msg.SenderConnection);
+            }
+        }
+
         public void HandleIncomingData(NetIncomingMessage msg)
         {
-            string type = msg.ReadString();
+            MessageType type = (MessageType)msg.ReadInt32();
 
-            if (type == "CLT_PLAYER_MOVE")
+            if (type == MessageType.PlayerMoved)
             {
                 float x = msg.ReadFloat();
                 float y = msg.ReadFloat();
 
-                Console.WriteLine("S RECV! " + x + "-" + y);
-
                 connections[msg.SenderConnection.RemoteUniqueIdentifier].Player.Position = new Vector2(x, y);
 
-                // @todo: actually verify this is legit
-
-                foreach (long id in connections.Keys)
-                {
-                    if (id != msg.SenderConnection.RemoteUniqueIdentifier)
-                    {
-                        // @todo: only create message once, send to multiple
-                        NetOutgoingMessage nmsg = server.CreateMessage();
-                        nmsg.Write("SRV_PLAYER_MOVE");
-                        nmsg.Write(msg.SenderConnection.RemoteUniqueIdentifier);
-                        nmsg.Write(x);
-                        nmsg.Write(y);
-
-                        Console.WriteLine("S SEND! " + x + "-" + y);
-
-                        server.SendMessage(nmsg, connections[id].NetConnection, NetDeliveryMethod.ReliableOrdered, 2);
-                    }
-                }
+                SendPlayerMove(msg.SenderConnection.RemoteUniqueIdentifier, x, y);
             }
 
-            if (type == "CLT_MAP_CHANGE")
+            if (type == MessageType.MapChanged)
             {
                 int j = msg.ReadInt32();
                 int i = msg.ReadInt32();
@@ -131,24 +127,43 @@ namespace Topaz.Networking
 
                 map.Map2[j, i] = tile;
 
-                foreach (long id in connections.Keys)
-                {
-                    // @todo: only create message once, send to multiple
-                    NetOutgoingMessage nmsg = server.CreateMessage();
-                    nmsg.Write("SRV_MAP_CHANGE");
-                    nmsg.Write(j);
-                    nmsg.Write(i);
-                    nmsg.Write(map.Map2[j, i]);
-
-                    server.SendMessage(nmsg, connections[id].NetConnection, NetDeliveryMethod.ReliableOrdered, 2);
-                }
+                SendMapChange(j, i, tile);
             }
+        }
+
+        public NetOutgoingMessage CreateMessage(MessageType type)
+        {
+            NetOutgoingMessage msg = server.CreateMessage();
+            msg.Write((int)type);
+            return msg;
+        }
+
+        public void SendMessage(NetOutgoingMessage msg, NetConnection recipient, NetDeliveryMethod method, int sequenceChannel)
+        {
+            server.SendMessage(msg, recipient, method, sequenceChannel);
+        }
+
+        public void SendMessage(NetOutgoingMessage msg, List<NetConnection> recipients, NetDeliveryMethod method, int sequenceChannel)
+        {
+            if (recipients.Count == 0)
+                return;
+
+            server.SendMessage(msg, recipients, method, sequenceChannel);
+        }
+
+        public void SendConnectionInfo(NetConnection connection)
+        {
+            NetOutgoingMessage msg = CreateMessage(MessageType.ConnectionInfo);
+
+            msg.Write(connection.RemoteUniqueIdentifier);
+
+            server.SendMessage(msg, connection, NetDeliveryMethod.ReliableOrdered, 1);
         }
 
         public void SendMap(NetConnection connection)
         {
-            NetOutgoingMessage msg = server.CreateMessage();
-            msg.Write("SRV_MAP");
+            NetOutgoingMessage msg = CreateMessage(MessageType.MapInfo);
+
             msg.Write(map.Map1.GetLength(0));
             msg.Write(map.Map1.GetLength(1));
             for (int j = 0; j < map.Map1.GetLength(0); j++)
@@ -171,27 +186,80 @@ namespace Topaz.Networking
 
         private void SendPlayerInfo(Networking.Connection connection)
         {
+            List<NetConnection> recipients = new List<NetConnection>();
+
             foreach (long id in connections.Keys)
             {
                 if (id != connection.NetConnection.RemoteUniqueIdentifier)
                 {
-                    // send new player to everyone else
-                    NetOutgoingMessage msg = server.CreateMessage();
-                    msg.Write("SRV_NEW_PLAYER");
-                    msg.Write(connection.NetConnection.RemoteUniqueIdentifier);
-                    msg.Write(connection.Player.Position.X);
-                    msg.Write(connection.Player.Position.Y);
-                    server.SendMessage(msg, connections[id].NetConnection, NetDeliveryMethod.ReliableOrdered, 1);
+                    recipients.Add(connections[id].NetConnection);
 
-                    // send existing players to new guy
-                    NetOutgoingMessage msg2 = server.CreateMessage();
-                    msg2.Write("SRV_NEW_PLAYER");
-                    msg2.Write(id);
-                    msg2.Write(connections[id].Player.Position.X);
-                    msg2.Write(connections[id].Player.Position.Y);
-                    server.SendMessage(msg2, connection.NetConnection, NetDeliveryMethod.ReliableOrdered, 1);
+                    // Send existing players to newly connected player
+                    NetOutgoingMessage msg = CreateMessage(MessageType.PlayerConnected);
+
+                    msg.Write(id);
+                    msg.Write(connections[id].Player.Position.X);
+                    msg.Write(connections[id].Player.Position.Y);
+
+                    SendMessage(msg, connection.NetConnection, NetDeliveryMethod.ReliableOrdered, 1);
                 }
-            } 
+            }
+
+            // Send newly connected player to other players.
+            {
+                NetOutgoingMessage msg = CreateMessage(MessageType.PlayerConnected);
+
+                msg.Write(connection.NetConnection.RemoteUniqueIdentifier);
+                msg.Write(connection.Player.Position.X);
+                msg.Write(connection.Player.Position.Y);
+
+                SendMessage(msg, recipients, NetDeliveryMethod.ReliableOrdered, 1);
+            }
+        }
+
+        public void SendPlayerDisconnected(NetConnection connection)
+        {
+            List<NetConnection> recipients = new List<NetConnection>();
+            foreach (long id in connections.Keys)
+                recipients.Add(connections[id].NetConnection);
+
+            foreach (long id in connections.Keys)
+            {
+                NetOutgoingMessage msg = CreateMessage(MessageType.PlayerDisconnected);
+
+                msg.Write(connection.RemoteUniqueIdentifier);
+
+                SendMessage(msg, recipients, NetDeliveryMethod.ReliableOrdered, 2);
+            }
+        }
+
+        public void SendPlayerMove(long srcId, float x, float y)
+        {
+            List<NetConnection> recipients = new List<NetConnection>();
+            foreach (long id in connections.Keys)
+                recipients.Add(connections[id].NetConnection);
+
+            NetOutgoingMessage nmsg = CreateMessage(MessageType.PlayerMoved);
+            nmsg.Write(srcId);
+            nmsg.Write(x);
+            nmsg.Write(y);
+
+            server.SendMessage(nmsg, recipients, NetDeliveryMethod.ReliableOrdered, 2);
+        }
+
+        public void SendMapChange(int j, int i, int tile)
+        {
+            List<NetConnection> recipients = new List<NetConnection>();
+            foreach (long id in connections.Keys)
+                recipients.Add(connections[id].NetConnection);
+            
+            NetOutgoingMessage nmsg = CreateMessage(MessageType.MapChanged);
+
+            nmsg.Write(j);
+            nmsg.Write(i);
+            nmsg.Write(map.Map2[j, i]);
+
+            server.SendMessage(nmsg, recipients, NetDeliveryMethod.ReliableOrdered, 2);
         }
     }
 }

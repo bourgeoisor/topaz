@@ -98,7 +98,7 @@ namespace Topaz.Engine
         {
             Console.WriteLine("Terminating...");
             State = WindowState.Terminating;
-            Networking.Client.Instance.Terminate();
+            Networking.Client.Instance.Disconnect();
             Networking.Server.Instance.Terminate();
         }
 

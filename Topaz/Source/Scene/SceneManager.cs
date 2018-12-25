@@ -27,10 +27,6 @@ namespace Topaz.Scene
 
             DisplayBoundaries = false;
 
-            // @todo: Move this
-            // @todo: Do in separate thread to not block drawing
-            // @todo: Only start server if single player or host
-            Networking.Server.Instance.Initialize();
             Networking.Client.Instance.Initialize();
         }
 
@@ -50,6 +46,15 @@ namespace Topaz.Scene
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F2))
                 DisplayBoundaries = !DisplayBoundaries;
+
+            if (Engine.Input.Instance.IsKeyPressed(Keys.F9))
+                Networking.Server.Instance.Initialize();
+
+            if (Engine.Input.Instance.IsKeyPressed(Keys.F10))
+                Networking.Client.Instance.Connect("127.0.0.1", 12345);
+
+            if (Engine.Input.Instance.IsKeyPressed(Keys.F12))
+                Networking.Client.Instance.Disconnect();
 
             Networking.Client.Instance.HandleMessages();
 

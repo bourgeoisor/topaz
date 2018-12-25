@@ -55,6 +55,7 @@
     <Compile Include="Source\Mob\Player.cs" />
     <Compile Include="Source\Networking\Client.cs" />
     <Compile Include="Source\Networking\Connection.cs" />
+    <Compile Include="Source\Networking\MessageType.cs" />
     <Compile Include="Source\Networking\Server.cs" />
     <Compile Include="Source\Scene\SceneManager.cs" />
     <Compile Include="Source\Scene\WorldScene.cs" />
