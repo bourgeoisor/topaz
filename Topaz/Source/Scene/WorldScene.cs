@@ -1,9 +1,7 @@
-﻿using Lidgren.Network;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Threading;
 
 namespace Topaz.Scene
 {
@@ -17,13 +15,9 @@ namespace Topaz.Scene
 
         const int SPRITE_WIDTH = 32;
 
-        //Mob.Player player;
-
         public WorldScene()
         {
             client = Networking.Client.Instance;
-
-            //player = new Mob.Player();
         }
 
         public void LoadContent()

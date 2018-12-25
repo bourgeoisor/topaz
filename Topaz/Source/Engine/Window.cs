@@ -41,9 +41,9 @@ namespace Topaz.Engine
             game.Window.Title = title;
             game.Window.AllowUserResizing = true;
             game.IsMouseVisible = true;
-            game.IsFixedTimeStep = false;
+            game.IsFixedTimeStep = true;
 
-            graphics.SynchronizeWithVerticalRetrace = false;
+            graphics.SynchronizeWithVerticalRetrace = true;
             graphics.PreferredBackBufferWidth = DEFAULT_WINDOW_WIDTH;
             graphics.PreferredBackBufferHeight = DEFAULT_WINDOW_HEIGHT;
             graphics.ApplyChanges();
