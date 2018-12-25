@@ -51,16 +51,25 @@
     <Compile Include="Source\Engine\Input.cs" />
     <Compile Include="Source\Engine\Window.cs" />
     <Compile Include="Source\Interface\DebugInfo.cs" />
+    <Compile Include="Source\Mob\Mob.cs" />
+    <Compile Include="Source\Mob\Player.cs" />
+    <Compile Include="Source\Networking\Client.cs" />
+    <Compile Include="Source\Networking\Connection.cs" />
+    <Compile Include="Source\Networking\Server.cs" />
     <Compile Include="Source\Scene\SceneManager.cs" />
+    <Compile Include="Source\Scene\WorldScene.cs" />
+    <Compile Include="Source\World\Map.cs" />
     <Compile Include="Topaz.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Lidgren.Network, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -124,6 +133,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="obj\GitHash.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
