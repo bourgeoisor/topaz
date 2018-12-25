@@ -10,17 +10,17 @@ namespace Topaz.Interface
         const int POSITION_X = 20;
         const int POSITION_Y = 20;
 
-        //GameState state;
+        Scene.WorldScene world;
         Engine.Content graphicsContent;
         string debugInfo;
         bool display;
 
-        public DebugInfo()
+        public DebugInfo(Scene.WorldScene world)
         {
-            //state = GameState.Instance;
+            this.world = world;
             graphicsContent = Engine.Content.Instance;
             debugInfo = "";
-            display = false;
+            display = true;
         }
 
         public void Update(GameTime gameTime)
@@ -36,8 +36,12 @@ namespace Topaz.Interface
             debugInfo += " Width: " + viewport.Width + ", Height: " + viewport.Height + "\n";
             debugInfo += "Input\n";
             debugInfo += " Mouse Coords: " + mouse.Position.ToString() + "\n";
-            //debugInfo += "Player\n";
-            //debugInfo += " Coordinates: " + state.Player.GetCoordinates();
+            debugInfo += " Tile Coords: " + world.GetMouseCoordinates() + "\n";
+            debugInfo += "Player\n";
+            debugInfo += " Coordinates: " + world.GetCoordinates() + "\n";
+            debugInfo += "Network\n";
+            debugInfo += " Status: " + Networking.Client.Instance.GetClientConnectionStatus() + "\n";
+            debugInfo += " Last Msg: " + Networking.Client.Instance.GetLastMessage();
         }
 
         public void Draw(GameTime gameTime)

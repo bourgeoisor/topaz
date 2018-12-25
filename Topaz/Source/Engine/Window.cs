@@ -41,16 +41,20 @@ namespace Topaz.Engine
             game.Window.Title = title;
             game.Window.AllowUserResizing = true;
             game.IsMouseVisible = true;
+            game.IsFixedTimeStep = false;
 
+            graphics.SynchronizeWithVerticalRetrace = false;
             graphics.PreferredBackBufferWidth = DEFAULT_WINDOW_WIDTH;
             graphics.PreferredBackBufferHeight = DEFAULT_WINDOW_HEIGHT;
             graphics.ApplyChanges();
 
+            Engine.Content.Instance.Initialize(game, graphics);
             Scene.SceneManager.Instance.Initialize();
         }
 
         public void LoadContent()
         {
+            Engine.Content.Instance.LoadContent();
             Scene.SceneManager.Instance.LoadContent();
         }
 
@@ -62,7 +66,7 @@ namespace Topaz.Engine
         public void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                State = WindowState.Terminating;
+                Terminate();
 
             if (Engine.Input.Instance.IsKeyDown(Keys.LeftControl) && Engine.Input.Instance.IsKeyDown(Keys.Enter))
             {
@@ -82,11 +86,20 @@ namespace Topaz.Engine
             }
 
             Scene.SceneManager.Instance.Update(gameTime);
+            Input.Instance.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
             Scene.SceneManager.Instance.Draw(gameTime);
+        }
+
+        public void Terminate()
+        {
+            Console.WriteLine("Terminating...");
+            State = WindowState.Terminating;
+            Networking.Client.Instance.Terminate();
+            Networking.Server.Instance.Terminate();
         }
 
         public Viewport GetViewport()

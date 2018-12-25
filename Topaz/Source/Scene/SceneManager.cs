@@ -8,12 +8,14 @@ namespace Topaz.Scene
     {
         Interface.DebugInfo debugInfo;
 
-        //Map map;
+        private WorldScene world;
 
         private static readonly Lazy<SceneManager> lazy =
             new Lazy<SceneManager>(() => new SceneManager());
 
         public static SceneManager Instance { get { return lazy.Value; } }
+
+        internal WorldScene World { get => world; set => world = value; }
 
         private SceneManager()
         {
@@ -21,13 +23,19 @@ namespace Topaz.Scene
 
         public void Initialize()
         {
-            //map = new Map();
-            debugInfo = new Interface.DebugInfo();
+            world = new WorldScene();
+            debugInfo = new Interface.DebugInfo(world);
+
+            // @todo: Move this
+            // @todo: Do in separate thread to not block drawing
+            // @todo: Only start server if single player or host
+            Networking.Server.Instance.Initialize();
+            Networking.Client.Instance.Initialize();
         }
 
         public void LoadContent()
         {
-            //map.LoadContent();
+            world.LoadContent();
         }
 
         public void UnloadContent()
@@ -39,15 +47,15 @@ namespace Topaz.Scene
             if (Engine.Input.Instance.IsKeyPressed(Keys.F1))
                 debugInfo.Toggle();
 
-            //map.Update(gameTime);
-            debugInfo.Update(gameTime);
+            Networking.Client.Instance.HandleMessages();
 
-            Engine.Input.Instance.Update(gameTime);
+            world.Update(gameTime);
+            debugInfo.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-            //map.Draw(gameTime);
+            world.Draw(gameTime);
             debugInfo.Draw(gameTime);
         }
     }

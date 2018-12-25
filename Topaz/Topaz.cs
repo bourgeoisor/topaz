@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Topaz
 {
@@ -17,14 +18,12 @@ namespace Topaz
         protected override void Initialize()
         {
             Engine.Window.Instance.Initialize(this, graphics);
-            Engine.Content.Instance.Initialize(this, graphics);
 
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            Engine.Content.Instance.LoadContent();
             Engine.Window.Instance.LoadContent();
         }
 
