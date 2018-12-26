@@ -9,6 +9,8 @@ namespace Topaz.Networking
 {
     public sealed class Client
     {
+        Engine.Logger logger = new Engine.Logger("Client");
+
         NetClient client;
         World.Map map;
         Mob.Player player;
@@ -31,7 +33,7 @@ namespace Topaz.Networking
 
         public void Initialize()
         {
-            Console.WriteLine("Starting client...");
+            logger.Info("Starting...");
 
             map = new World.Map();
             player = new Mob.Player();
@@ -42,6 +44,8 @@ namespace Topaz.Networking
 
             client = new NetClient(config);
             client.Start();
+
+            logger.Info("Started.");
         }
 
         public void Connect(string host, int port)
@@ -52,6 +56,7 @@ namespace Topaz.Networking
         public void Disconnect()
         {
             client.Disconnect("terminating");
+            logger.Info("Disconnected.");
         }
 
         public NetConnectionStatus GetClientConnectionStatus()
@@ -73,21 +78,25 @@ namespace Topaz.Networking
 
                 switch (msg.MessageType)
                 {
+                    case NetIncomingMessageType.StatusChanged:
+                        logger.Info("StatusChanged received: " + msg.SenderConnection.Status);
+                        break;
                     case NetIncomingMessageType.Data:
                         lastMessage = (MessageType)msg.PeekInt32() + "(" + msg.SenderConnection?.Status + ")";
                         HandleIncomingData(msg);
                         break;
-                    case NetIncomingMessageType.StatusChanged:
-                        Console.WriteLine(msg.SenderConnection.Status);
-                        break;
                     case NetIncomingMessageType.VerboseDebugMessage:
                     case NetIncomingMessageType.DebugMessage:
+                        logger.Debug(msg.ReadString());
+                        break;
                     case NetIncomingMessageType.WarningMessage:
+                        logger.Warn(msg.ReadString());
+                        break;
                     case NetIncomingMessageType.ErrorMessage:
-                        Console.WriteLine(msg.MessageType + ": " + msg.ReadString());
+                        logger.Error(msg.ReadString());
                         break;
                     default:
-                        Console.WriteLine("Unhandled type: " + msg.MessageType);
+                        logger.Warn("Unhandled MessageType: " + msg.MessageType);
                         break;
                 }
 

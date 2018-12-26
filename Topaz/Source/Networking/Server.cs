@@ -8,6 +8,8 @@ namespace Topaz.Networking
 {
     public sealed class Server
     {
+        Engine.Logger logger = new Engine.Logger("Server");
+
         Thread thread;
         NetServer server;
         Dictionary<long, Networking.Connection> connections;
@@ -24,7 +26,7 @@ namespace Topaz.Networking
 
         public void Initialize()
         {
-            Console.WriteLine("Starting server...");
+            logger.Info("Starting...");
 
             map = new World.Map();
             map.GenerateRandom();
@@ -42,6 +44,8 @@ namespace Topaz.Networking
 
             thread = new Thread(ServerThread);
             thread.Start();
+
+            logger.Info("Started.");
         }
 
         public void Terminate()
@@ -54,9 +58,7 @@ namespace Topaz.Networking
         }
 
         public void ServerThread()
-        {
-            Console.WriteLine("Server started...");
-
+        {   
             NetIncomingMessage msg;
             while (Engine.Window.Instance.State == Engine.Window.WindowState.Running)
             {
@@ -66,6 +68,7 @@ namespace Topaz.Networking
                     switch (msg.MessageType)
                     {
                         case NetIncomingMessageType.StatusChanged:
+                            logger.Info("StatusChanged received: " + msg.SenderConnection.Status);
                             HandleStatusChanged(msg);
                             break;
                         case NetIncomingMessageType.Data:
@@ -73,19 +76,23 @@ namespace Topaz.Networking
                             break;
                         case NetIncomingMessageType.VerboseDebugMessage:
                         case NetIncomingMessageType.DebugMessage:
+                            logger.Debug(msg.ReadString());
+                            break;
                         case NetIncomingMessageType.WarningMessage:
+                            logger.Warn(msg.ReadString());
+                            break;
                         case NetIncomingMessageType.ErrorMessage:
-                            Console.WriteLine(msg.ReadString());
+                            logger.Error(msg.ReadString());
                             break;
                         default:
-                            Console.WriteLine("Unhandled type: " + msg.MessageType);
+                            logger.Warn("Unhandled MessageType: " + msg.MessageType);
                             break;
                     }
                     server.Recycle(msg);
                 }
             }
 
-            Console.WriteLine("Server terminated...");
+            logger.Info("Terminated.");
         }
 
         public void HandleStatusChanged(NetIncomingMessage msg)

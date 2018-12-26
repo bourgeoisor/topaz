@@ -54,7 +54,10 @@ namespace Topaz.Scene
                 Networking.Client.Instance.Connect("127.0.0.1", 12345);
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F12))
+            {
                 Networking.Client.Instance.Disconnect();
+                Networking.Server.Instance.Terminate();
+            }
 
             Networking.Client.Instance.HandleMessages();
 
