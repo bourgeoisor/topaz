@@ -219,7 +219,7 @@ namespace Topaz.Scene
                 if (step == 3) step = 1;
 
                 Rectangle sourcea = new Rectangle(step * SPRITE_WIDTH, player.Direction * SPRITE_WIDTH, SPRITE_WIDTH, SPRITE_WIDTH);
-                Vector2 pos = new Vector2(origin.X + player.Position.X - client.Player.Position.X, origin.Y + player.Position.Y - client.Player.Position.Y);
+                Vector2 pos = new Vector2(origin.X + (player.Position.X - client.Player.Position.X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + (player.Position.Y - client.Player.Position.Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
                 Engine.Content.Instance.SpriteBatch.Draw(player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), Engine.Content.DEFAULT_SCALE, SpriteEffects.None, 0f);
 
                 // @todo: change to reflect origin + scale
