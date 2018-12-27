@@ -15,8 +15,8 @@ namespace Topaz.Mob
 
         public Mob()
         {
-            this.Position = new Vector2(5 * Scene.WorldScene.TILE_WIDTH * Scene.WorldScene.SCALE, 5 * Scene.WorldScene.TILE_WIDTH * Scene.WorldScene.SCALE);
-            this.Speed = 200;
+            this.Position = new Vector2(5, 5);
+            this.Speed = 7;
             Direction = 0;
             AnimationFrame = 0;
         }

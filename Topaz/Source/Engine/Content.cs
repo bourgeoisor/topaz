@@ -10,6 +10,8 @@ namespace Topaz.Engine
 {
     public sealed class Content
     {
+        public const float DEFAULT_SCALE = 2f;
+
         public ContentManager ContentManager { get; private set; }
         public GraphicsDeviceManager Graphics { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }

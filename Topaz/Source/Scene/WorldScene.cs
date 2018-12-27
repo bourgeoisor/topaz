@@ -8,12 +8,10 @@ namespace Topaz.Scene
     class WorldScene
     {
         public const int TILE_WIDTH = 32;
-        public const float SCALE = 2f;
+        const int SPRITE_WIDTH = 32;
 
         Texture2D tileset;
         Networking.Client client;
-
-        const int SPRITE_WIDTH = 32;
 
         public WorldScene()
         {
@@ -89,8 +87,6 @@ namespace Topaz.Scene
             {
                 client.Player.AnimationFrame = 1;
             }
-
-            //Console.WriteLine(deltaX);
 
             client.Player.Move(deltaX, 0);
             if (IsCollision())
@@ -174,8 +170,8 @@ namespace Topaz.Scene
             {
                 for (int i = 0; i < client.Map.Map1.GetLength(1); i++)
                 {
-                    Vector2 positiona = new Vector2(origin.X + i * (TILE_WIDTH * SCALE) - client.Player.Position.X, origin.Y + j * (TILE_WIDTH * SCALE) - client.Player.Position.Y);
-                    DrawTile(client.Map.Map1[j, i], positiona);
+                    Vector2 position = new Vector2(origin.X + (i - client.Player.Position.X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + (j - client.Player.Position.Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
+                    DrawTile(client.Map.Map1[j, i], position);
                 }
             }
 
@@ -186,38 +182,47 @@ namespace Topaz.Scene
                 {
                     if (client.Map.Map2[j, i] != -1)
                     {
-                        Vector2 positiona = new Vector2(origin.X + i * (TILE_WIDTH * SCALE) - client.Player.Position.X, origin.Y + j * (TILE_WIDTH * SCALE) - client.Player.Position.Y);
-                        DrawTile(client.Map.Map2[j, i], positiona);
+                        Vector2 position = new Vector2(origin.X + (i - client.Player.Position.X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + (j - client.Player.Position.Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
+                        DrawTile(client.Map.Map2[j, i], position);
 
                         if (SceneManager.Instance.DisplayBoundaries)
-                            DrawTile(11, positiona);
+                            DrawTile(11, position);
                     }
                 }
             }
 
             // selector
-            Vector2 positionm = new Vector2(origin.X + (int)Math.Floor(GetMouseCoordinates().X) * (TILE_WIDTH * SCALE) - client.Player.Position.X, origin.Y + (int)Math.Floor(GetMouseCoordinates().Y) * (TILE_WIDTH * SCALE) - client.Player.Position.Y);
-            DrawTile(10, positionm);
+            {
+                Vector2 position = new Vector2(origin.X + ((int)Math.Floor(GetMouseCoordinates().X) - client.Player.Position.X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + ((int)Math.Floor(GetMouseCoordinates().Y) - client.Player.Position.Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
+                DrawTile(10, position);
+            }
 
             // character
             {
                 int step = (int)Math.Floor(client.Player.AnimationFrame);
                 if (step == 3) step = 1;
+
                 Rectangle sourcea = new Rectangle(step * SPRITE_WIDTH, client.Player.Direction * SPRITE_WIDTH, SPRITE_WIDTH, SPRITE_WIDTH);
                 Vector2 pos = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
-                Engine.Content.Instance.SpriteBatch.Draw(client.Player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), WorldScene.SCALE, SpriteEffects.None, 0f);
+                Engine.Content.Instance.SpriteBatch.Draw(client.Player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), Engine.Content.DEFAULT_SCALE, SpriteEffects.None, 0f);
+
+                // @todo: change to reflect origin + scale
                 Vector2 post = new Vector2(pos.X - 16 * 2, pos.Y - 16 * 2);
                 if (SceneManager.Instance.DisplayBoundaries)
                     DrawTile(11, post);
             }
 
+            // other characters
             foreach (Mob.Player player in client.Players.Values)
             {
                 int step = (int)Math.Floor(player.AnimationFrame);
                 if (step == 3) step = 1;
+
                 Rectangle sourcea = new Rectangle(step * SPRITE_WIDTH, player.Direction * SPRITE_WIDTH, SPRITE_WIDTH, SPRITE_WIDTH);
                 Vector2 pos = new Vector2(origin.X + player.Position.X - client.Player.Position.X, origin.Y + player.Position.Y - client.Player.Position.Y);
-                Engine.Content.Instance.SpriteBatch.Draw(player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), WorldScene.SCALE, SpriteEffects.None, 0f);
+                Engine.Content.Instance.SpriteBatch.Draw(player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), Engine.Content.DEFAULT_SCALE, SpriteEffects.None, 0f);
+
+                // @todo: change to reflect origin + scale
                 Vector2 post = new Vector2(pos.X - 16 * 2, pos.Y - 16 * 2);
                 if (SceneManager.Instance.DisplayBoundaries)
                     DrawTile(11, post);
@@ -235,19 +240,30 @@ namespace Topaz.Scene
             Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
             Rectangle source = new Rectangle(col * TILE_WIDTH, row * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 
-            Engine.Content.Instance.SpriteBatch.Draw(tileset, position, source, Color.White, 0f, new Vector2(0, 0), SCALE, SpriteEffects.None, 0f);
+            Engine.Content.Instance.SpriteBatch.Draw(
+                tileset,
+                position,
+                source,
+                Color.White,
+                0f,
+                new Vector2(0, 0),
+                Engine.Content.DEFAULT_SCALE,
+                SpriteEffects.None,
+                0f
+            );
         }
 
         public Vector2 GetCoordinates()
         {
-            return new Vector2(client.Player.Position.X / (WorldScene.TILE_WIDTH * WorldScene.SCALE), client.Player.Position.Y / (WorldScene.TILE_WIDTH * WorldScene.SCALE));
+            return client.Player.Position;
         }
 
         public Vector2 GetMouseCoordinates()
         {
-            int dx = Mouse.GetState().X - Engine.Window.Instance.GetViewport().Width / 2;
-            int dy = Mouse.GetState().Y - Engine.Window.Instance.GetViewport().Height / 2;
-            return new Vector2((client.Player.Position.X + dx) / (WorldScene.TILE_WIDTH * WorldScene.SCALE), (client.Player.Position.Y + dy) / (WorldScene.TILE_WIDTH * WorldScene.SCALE));
+            float dx = Mouse.GetState().X - (Engine.Window.Instance.GetViewport().Width / 2);
+            float dy = Mouse.GetState().Y - (Engine.Window.Instance.GetViewport().Height / 2);
+
+            return new Vector2(client.Player.Position.X + (dx / TILE_WIDTH / Engine.Content.DEFAULT_SCALE), client.Player.Position.Y + (dy / TILE_WIDTH / Engine.Content.DEFAULT_SCALE));
         }
     }
 }
