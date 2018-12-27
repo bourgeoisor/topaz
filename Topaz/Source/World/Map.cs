@@ -34,7 +34,7 @@
                 {
                     if (j == 0 || i == 0 || j == Map2.GetLength(0)-1 || i == Map2.GetLength(1)-1)
                     {
-                        Map2[j, i] = 16 * 14;
+                        Map2[j, i] = 63;
                     }
                     else
                     {

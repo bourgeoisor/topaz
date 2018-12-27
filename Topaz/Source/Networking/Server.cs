@@ -40,8 +40,6 @@ namespace Topaz.Networking
             server = new NetServer(config);
             server.Start();
 
-            //server.UPnP.ForwardPort(12345, Properties.Resources.Title);
-
             thread = new Thread(ServerThread);
             thread.Start();
 
@@ -55,6 +53,11 @@ namespace Topaz.Networking
                 server.Shutdown("terminating");
                 thread.Abort();
             }
+        }
+
+        public void ForwardPort()
+        {
+            server.UPnP.ForwardPort(12345, Properties.Resources.Title);
         }
 
         public void ServerThread()

@@ -90,6 +90,8 @@ namespace Topaz.Scene
                 client.Player.AnimationFrame = 1;
             }
 
+            //Console.WriteLine(deltaX);
+
             client.Player.Move(deltaX, 0);
             if (IsCollision())
             {

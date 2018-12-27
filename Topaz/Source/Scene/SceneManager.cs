@@ -47,11 +47,17 @@ namespace Topaz.Scene
             if (Engine.Input.Instance.IsKeyPressed(Keys.F2))
                 DisplayBoundaries = !DisplayBoundaries;
 
+            if (Engine.Input.Instance.IsKeyPressed(Keys.F8))
+                Networking.Server.Instance.ForwardPort();
+
             if (Engine.Input.Instance.IsKeyPressed(Keys.F9))
                 Networking.Server.Instance.Initialize();
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F10))
                 Networking.Client.Instance.Connect("127.0.0.1", 12345);
+
+            if (Engine.Input.Instance.IsKeyPressed(Keys.F11))
+                Networking.Client.Instance.Connect("174.112.39.222", 12345);
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F12))
             {
