@@ -60,6 +60,7 @@ namespace Topaz.Engine
 
         public void UnloadContent()
         {
+            Engine.Content.Instance.UnloadContent();
             Scene.SceneManager.Instance.UnloadContent();
         }
 

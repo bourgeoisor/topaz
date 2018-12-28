@@ -5,10 +5,12 @@ namespace Topaz.Mob
 {
     class Mob
     {
-        private Vector2 _position;
+        Vector2 _position;
 
         public Texture2D Sprite { get; set; }
         public Vector2 Position { get => _position; set => _position = value; }
+        public Rectangle SpriteBounds { get; set; }
+        public Rectangle CollisionBounds { get; set; }
         public int Speed { get; set; }
         public int Direction { get; set; }
         public float AnimationFrame { get; set; }

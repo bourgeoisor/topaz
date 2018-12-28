@@ -8,7 +8,6 @@ namespace Topaz.Scene
     class WorldScene
     {
         public const int TILE_WIDTH = 32;
-        const int SPRITE_WIDTH = 32;
 
         Texture2D tileset;
         Networking.Client client;
@@ -27,9 +26,6 @@ namespace Topaz.Scene
         {
             if (client.Map.Map1 == null)
                 return;
-
-            client.Player.AnimationFrame += (float)gameTime.ElapsedGameTime.TotalSeconds * 5;
-            if (client.Player.AnimationFrame >= 4) client.Player.AnimationFrame = 0;
 
             var kstate = Keyboard.GetState();
 
@@ -89,12 +85,12 @@ namespace Topaz.Scene
             }
 
             client.Player.Move(deltaX, 0);
-            if (IsCollision())
+            if (IsCollision(client.Player))
             {
                 client.Player.Move(-deltaX, 0);
             }
             client.Player.Move(0, deltaY);
-            if (IsCollision())
+            if (IsCollision(client.Player))
             {
                 client.Player.Move(0, -deltaY);
             }
@@ -123,10 +119,15 @@ namespace Topaz.Scene
             }
 
             if (deltaX != 0 || deltaY != 0)
+            {
+                client.Player.AnimationFrame += (float)gameTime.ElapsedGameTime.TotalSeconds * 5;
+                if (client.Player.AnimationFrame >= 4) client.Player.AnimationFrame = 0;
+
                 client.SendPlayerMove();
+            }
         }
 
-        public bool IsCollision()
+        public bool IsCollision(Mob.Player player)
         {
             int currX = (int)Math.Floor(GetCoordinates().X);
             int currY = (int)Math.Floor(GetCoordinates().Y);
@@ -135,7 +136,7 @@ namespace Topaz.Scene
             {
                 for (int i = -1; i < 2; i++)
                 {
-                    if (client.Map.Map2[currY + j, currX + i] != -1 && AABB(currY + j, currX + i))
+                    if (client.Map.Map2[currY + j, currX + i] != -1 && AABB(currY + j, currX + i, player))
                     {
                         return true;
                     }
@@ -145,12 +146,12 @@ namespace Topaz.Scene
             return false;
         }
 
-        public bool AABB(int tileJ, int tileI)
+        public bool AABB(int tileJ, int tileI, Mob.Player player)
         {
-            bool AisToTheRightOfB = tileI * TILE_WIDTH + 0.1 > GetCoordinates().X * TILE_WIDTH + (SPRITE_WIDTH / 2);
-            bool AisToTheLeftOfB = tileI * TILE_WIDTH + TILE_WIDTH - 0.1 < GetCoordinates().X * TILE_WIDTH - (SPRITE_WIDTH / 2);
-            bool AisAboveB = tileJ * TILE_WIDTH + TILE_WIDTH - 0.1 < GetCoordinates().Y * TILE_WIDTH - (SPRITE_WIDTH / 2);
-            bool AisBelowB = tileJ * TILE_WIDTH + 0.1 > GetCoordinates().Y * TILE_WIDTH + (SPRITE_WIDTH / 2);
+            bool AisToTheRightOfB = tileI * TILE_WIDTH + 0.1 > GetCoordinates().X * TILE_WIDTH + (player.CollisionBounds.Width/2);
+            bool AisToTheLeftOfB = tileI * TILE_WIDTH + TILE_WIDTH - 0.1 < GetCoordinates().X * TILE_WIDTH - (player.CollisionBounds.Width/2);
+            bool AisAboveB = tileJ * TILE_WIDTH + TILE_WIDTH - 0.1 < GetCoordinates().Y * TILE_WIDTH - (player.CollisionBounds.Height/2);
+            bool AisBelowB = tileJ * TILE_WIDTH + 0.1 > GetCoordinates().Y * TILE_WIDTH + (player.CollisionBounds.Height / 2);
             return !(AisToTheRightOfB
               || AisToTheLeftOfB
               || AisAboveB
@@ -163,7 +164,7 @@ namespace Topaz.Scene
                 return;
 
             Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
-            Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, null);
+            Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
 
             // tiles1
             for (int j = 0; j < client.Map.Map1.GetLength(0); j++)
@@ -186,7 +187,17 @@ namespace Topaz.Scene
                         DrawTile(client.Map.Map2[j, i], position);
 
                         if (SceneManager.Instance.DisplayBoundaries)
-                            DrawTile(11, position);
+                            Engine.Content.Instance.SpriteBatch.Draw(
+                                Engine.Content.Instance.AlphaRedPixel,
+                                position,
+                                new Rectangle(0, 0, TILE_WIDTH, TILE_WIDTH),
+                                Color.White,
+                                0f,
+                                new Vector2(0, 0),
+                                Engine.Content.DEFAULT_SCALE,
+                                SpriteEffects.None,
+                                0f
+                            );
                     }
                 }
             }
@@ -198,36 +209,11 @@ namespace Topaz.Scene
             }
 
             // character
-            {
-                int step = (int)Math.Floor(client.Player.AnimationFrame);
-                if (step == 3) step = 1;
-
-                Rectangle sourcea = new Rectangle(step * SPRITE_WIDTH, client.Player.Direction * SPRITE_WIDTH, SPRITE_WIDTH, SPRITE_WIDTH);
-                Vector2 pos = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
-                Engine.Content.Instance.SpriteBatch.Draw(client.Player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), Engine.Content.DEFAULT_SCALE, SpriteEffects.None, 0f);
-
-                // @todo: change to reflect origin + scale
-                Vector2 post = new Vector2(pos.X - 16 * 2, pos.Y - 16 * 2);
-                if (SceneManager.Instance.DisplayBoundaries)
-                    DrawTile(11, post);
-            }
+            client.Player.Draw(gameTime);
 
             // other characters
             foreach (Mob.Player player in client.Players.Values)
-            {
-                int step = (int)Math.Floor(player.AnimationFrame);
-                if (step == 3) step = 1;
-
-                Rectangle sourcea = new Rectangle(step * SPRITE_WIDTH, player.Direction * SPRITE_WIDTH, SPRITE_WIDTH, SPRITE_WIDTH);
-                Vector2 pos = new Vector2(origin.X + (player.Position.X - client.Player.Position.X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + (player.Position.Y - client.Player.Position.Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
-                Engine.Content.Instance.SpriteBatch.Draw(player.Sprite, pos, sourcea, Color.White, 0f, new Vector2(16, 16), Engine.Content.DEFAULT_SCALE, SpriteEffects.None, 0f);
-
-                // @todo: change to reflect origin + scale
-                Vector2 post = new Vector2(pos.X - 16 * 2, pos.Y - 16 * 2);
-                if (SceneManager.Instance.DisplayBoundaries)
-                    DrawTile(11, post);
-            }
-            
+                player.Draw(gameTime);
 
             Engine.Content.Instance.SpriteBatch.End();
         }

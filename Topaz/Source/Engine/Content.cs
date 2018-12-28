@@ -19,6 +19,7 @@ namespace Topaz.Engine
 
         public SpriteFont Font { get; private set; }
         public Texture2D BlackPixel { get; private set; }
+        public Texture2D AlphaRedPixel { get; private set; }
 
         Dictionary<string, Texture2D> loadedTextures;
 
@@ -46,6 +47,16 @@ namespace Topaz.Engine
 
             BlackPixel = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             BlackPixel.SetData<Color>(new Color[] { Color.Black });
+
+            AlphaRedPixel = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            AlphaRedPixel.SetData<Color>(new Color[] { new Color(Color.Red, 0.2f) });
+        }
+
+        public void UnloadContent()
+        {
+            SpriteBatch.Dispose();
+            BlackPixel.Dispose();
+            AlphaRedPixel.Dispose();
         }
 
         public Texture2D GetTexture(string path)

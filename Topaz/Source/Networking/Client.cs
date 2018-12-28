@@ -112,6 +112,7 @@ namespace Topaz.Networking
             {
                 localId = msg.ReadInt64();
                 players.Add(localId, new Player());
+                players[localId].IsClient = true;
                 player = players[localId];
             }
 
