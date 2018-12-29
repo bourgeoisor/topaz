@@ -15,8 +15,8 @@
 
         public void GenerateRandom()
         {
-            int rows = 10;
-            int cols = 15;
+            int rows = 15;
+            int cols = 20;
 
             Map1 = new int[rows, cols];
             for (int j = 0; j < Map1.GetLength(0); j++)
@@ -32,7 +32,7 @@
             {
                 for (int i = 0; i < Map2.GetLength(1); i++)
                 {
-                    if (j == 0 || i == 0 || j == Map2.GetLength(0)-1 || i == Map2.GetLength(1)-1)
+                    if (j < 2 || i < 2 || j > Map2.GetLength(0)-3 || i > Map2.GetLength(1)-3)
                     {
                         Map2[j, i] = 63;
                     }

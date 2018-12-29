@@ -18,7 +18,7 @@ namespace Topaz.Mob
         public Mob()
         {
             this.Position = new Vector2(5, 5);
-            this.Speed = 7;
+            this.Speed = 10;
             Direction = 0;
             AnimationFrame = 0;
         }
