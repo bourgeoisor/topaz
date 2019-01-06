@@ -16,6 +16,7 @@ namespace Topaz.Networking
         Mob.Player player;
         Dictionary<long, Mob.Player> players;
         string lastMessage;
+        int lastLatency;
         long localId;
 
         private static readonly Lazy<Client> lazy =
@@ -26,6 +27,7 @@ namespace Topaz.Networking
         internal Map Map { get => map; set => map = value; }
         internal Player Player { get => player; set => player = value; }
         internal Dictionary<long, Player> Players { get => players; set => players = value; }
+        public int LastLatency { get => lastLatency; set => lastLatency = value; }
 
         private Client()
         {
@@ -41,6 +43,7 @@ namespace Topaz.Networking
 
             NetPeerConfiguration config = new NetPeerConfiguration(Properties.Resources.Title);
             config.ConnectionTimeout = 10;
+            config.EnableMessageType(NetIncomingMessageType.ConnectionLatencyUpdated);
 
             client = new NetClient(config);
             client.Start();
@@ -84,6 +87,9 @@ namespace Topaz.Networking
                     case NetIncomingMessageType.Data:
                         lastMessage = (MessageType)msg.PeekInt32() + "(" + msg.SenderConnection?.Status + ")";
                         HandleIncomingData(msg);
+                        break;
+                    case NetIncomingMessageType.ConnectionLatencyUpdated:
+                        lastLatency = (int)Math.Round(msg.ReadFloat()*1000);
                         break;
                     case NetIncomingMessageType.VerboseDebugMessage:
                     case NetIncomingMessageType.DebugMessage:
@@ -145,10 +151,12 @@ namespace Topaz.Networking
                 long id = msg.ReadInt64();
                 float x = msg.ReadFloat();
                 float y = msg.ReadFloat();
+                Mob.Mob.Direction direction = (Mob.Mob.Direction)msg.ReadInt32();
 
                 players.Add(id, new Player());
                 players[id].LoadContent();
-                players[id].Position = new Vector2(x, y);
+                players[id].SetPosition(new Vector2(x, y));
+                players[id].SetDirection(direction);
             }
 
             if (type == MessageType.PlayerMoved)
@@ -160,8 +168,16 @@ namespace Topaz.Networking
 
                 if (players.ContainsKey(id))
                 {
-                    players[id].Position = new Vector2(x, y);
-                    players[id].SetDirection(direction);
+                    if (id == localId && direction == Mob.Mob.Direction.None)
+                    {
+                        players[id].SetPosition(new Vector2(x, y));
+                    }
+                    else if (id != localId)
+                    {
+                        players[id].SetPosition(new Vector2(x, y));
+                        players[id].SetDirection(direction);
+                    }
+                    
                 }
             }
 
@@ -192,8 +208,8 @@ namespace Topaz.Networking
         {
             NetOutgoingMessage msg = CreateMessage(MessageType.PlayerMoved);
 
-            msg.Write(player.Position.X);
-            msg.Write(player.Position.Y);
+            msg.Write(player.GetPosition().X);
+            msg.Write(player.GetPosition().Y);
             msg.Write((int)player.GetDirection());
 
             SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 2);

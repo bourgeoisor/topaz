@@ -40,7 +40,7 @@ namespace Topaz.Interface
             debugInfo += "Player\n";
             debugInfo += " Coordinates: " + world.GetCoordinates() + "\n";
             debugInfo += "Network\n";
-            debugInfo += " Status: " + Networking.Client.Instance.GetClientConnectionStatus() + "\n";
+            debugInfo += " Status: " + Networking.Client.Instance.GetClientConnectionStatus() + " (" + Networking.Client.Instance.LastLatency + "ms)" + "\n";
             debugInfo += " Last Msg: " + Networking.Client.Instance.GetLastMessage();
         }
 

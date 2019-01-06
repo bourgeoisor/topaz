@@ -65,7 +65,7 @@ namespace Topaz.Networking
             NetIncomingMessage msg;
             while (Engine.Window.Instance.State == Engine.Window.WindowState.Running)
             {
-                Thread.Sleep(10);
+                Thread.Sleep(5);
                 while ((msg = server.ReadMessage()) != null)
                 {
                     switch (msg.MessageType)
@@ -125,7 +125,7 @@ namespace Topaz.Networking
                 float y = msg.ReadFloat();
                 Mob.Mob.Direction direction = (Mob.Mob.Direction)msg.ReadInt32();
 
-                connections[msg.SenderConnection.RemoteUniqueIdentifier].Player.Position = new Vector2(x, y);
+                connections[msg.SenderConnection.RemoteUniqueIdentifier].Player.SetPosition(new Vector2(x, y));
                 connections[msg.SenderConnection.RemoteUniqueIdentifier].Player.SetDirection(direction);
 
                 SendPlayerMove(msg.SenderConnection.RemoteUniqueIdentifier);
@@ -210,8 +210,9 @@ namespace Topaz.Networking
                     NetOutgoingMessage msg = CreateMessage(MessageType.PlayerConnected);
 
                     msg.Write(id);
-                    msg.Write(connections[id].Player.Position.X);
-                    msg.Write(connections[id].Player.Position.Y);
+                    msg.Write(connections[id].Player.GetPosition().X);
+                    msg.Write(connections[id].Player.GetPosition().Y);
+                    msg.Write((int)connections[id].Player.GetDirection());
 
                     SendMessage(msg, connection.NetConnection, NetDeliveryMethod.ReliableOrdered, 1);
                 }
@@ -222,8 +223,9 @@ namespace Topaz.Networking
                 NetOutgoingMessage msg = CreateMessage(MessageType.PlayerConnected);
 
                 msg.Write(connection.NetConnection.RemoteUniqueIdentifier);
-                msg.Write(connection.Player.Position.X);
-                msg.Write(connection.Player.Position.Y);
+                msg.Write(connection.Player.GetPosition().X);
+                msg.Write(connection.Player.GetPosition().Y);
+                msg.Write((int)connection.Player.GetDirection());
 
                 SendMessage(msg, recipients, NetDeliveryMethod.ReliableOrdered, 1);
             }
@@ -253,8 +255,8 @@ namespace Topaz.Networking
 
             NetOutgoingMessage nmsg = CreateMessage(MessageType.PlayerMoved);
             nmsg.Write(srcId);
-            nmsg.Write(connections[srcId].Player.Position.X);
-            nmsg.Write(connections[srcId].Player.Position.Y);
+            nmsg.Write(connections[srcId].Player.GetPosition().X);
+            nmsg.Write(connections[srcId].Player.GetPosition().Y);
             nmsg.Write((int)connections[srcId].Player.GetDirection());
 
             server.SendMessage(nmsg, recipients, NetDeliveryMethod.ReliableOrdered, 2);

@@ -6,6 +6,8 @@ namespace Topaz.Mob
 {
     class Mob
     {
+        Engine.Logger logger = new Engine.Logger("Mob");
+
         // temp
         public const int TILE_WIDTH = 32;
 
@@ -13,7 +15,7 @@ namespace Topaz.Mob
         Direction _direction;
 
         public Texture2D Sprite { get; set; }
-        public Vector2 Position { get => _position; set => _position = value; }
+
         public Rectangle SpriteBounds { get; set; }
         public Rectangle CollisionBounds { get; set; }
         public int Speed { get; set; }
@@ -24,10 +26,10 @@ namespace Topaz.Mob
         public Mob()
         {
             _direction = Direction.None;
-            this.Position = new Vector2(5, 5);
+            this.SetPosition(new Vector2(5, 5));
             this.Speed = 5;
             AnimationDirection = 0;
-            AnimationFrame = 0;
+            AnimationFrame = 1;
         }
 
         public enum Direction
@@ -102,8 +104,8 @@ namespace Topaz.Mob
 
             Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
             Vector2 position = new Vector2(
-                origin.X + (Position.X - Networking.Client.Instance.Player.Position.X) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE),
-                origin.Y + (Position.Y - Networking.Client.Instance.Player.Position.Y) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE)
+                origin.X + (_position.X - Networking.Client.Instance.Player._position.X) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE),
+                origin.Y + (_position.Y - Networking.Client.Instance.Player._position.Y) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE)
             );
             Rectangle source = new Rectangle(step * SpriteBounds.Width, AnimationDirection * SpriteBounds.Height, SpriteBounds.Width, SpriteBounds.Height);
 
@@ -145,11 +147,27 @@ namespace Topaz.Mob
         {
             if (direction != _direction)
             {
-                Console.WriteLine(direction);
                 _direction = direction;
 
                 if (_direction == Direction.None)
                     AnimationFrame = 1;
+            }
+        }
+
+        public Vector2 GetPosition()
+        {
+            return _position;
+        }
+
+        public void SetPosition(Vector2 position)
+        {
+            float deltaX = Math.Abs(position.X - _position.X);
+            float deltaY = Math.Abs(position.Y - _position.Y);
+            
+            if (deltaX > 0.2 || deltaY > 0.2)
+            {
+                logger.Debug("Correcting entity offset of " + deltaX + "," + deltaY);
+                _position = position;
             }
         }
 
@@ -231,8 +249,8 @@ namespace Topaz.Mob
 
         public bool IsCollision(Mob mob)
         {
-            int currX = (int)Math.Floor(mob.Position.X);
-            int currY = (int)Math.Floor(mob.Position.Y);
+            int currX = (int)Math.Floor(mob.GetPosition().X);
+            int currY = (int)Math.Floor(mob.GetPosition().Y);
 
             for (int j = -1; j < 2; j++)
             {
@@ -250,10 +268,10 @@ namespace Topaz.Mob
 
         public bool AABB(int tileJ, int tileI, Mob mob)
         {
-            bool AisToTheRightOfB = tileI * TILE_WIDTH + 0.1 > mob.Position.X * TILE_WIDTH + (mob.CollisionBounds.Width / 2);
-            bool AisToTheLeftOfB = tileI * TILE_WIDTH + TILE_WIDTH - 0.1 < mob.Position.X * TILE_WIDTH - (mob.CollisionBounds.Width / 2);
-            bool AisAboveB = tileJ * TILE_WIDTH + TILE_WIDTH - 0.1 < mob.Position.Y * TILE_WIDTH - (mob.CollisionBounds.Height / 2);
-            bool AisBelowB = tileJ * TILE_WIDTH + 0.1 > mob.Position.Y * TILE_WIDTH + (mob.CollisionBounds.Height / 2);
+            bool AisToTheRightOfB = tileI * TILE_WIDTH + 0.1 > mob.GetPosition().X * TILE_WIDTH + (mob.CollisionBounds.Width / 2);
+            bool AisToTheLeftOfB = tileI * TILE_WIDTH + TILE_WIDTH - 0.1 < mob.GetPosition().X * TILE_WIDTH - (mob.CollisionBounds.Width / 2);
+            bool AisAboveB = tileJ * TILE_WIDTH + TILE_WIDTH - 0.1 < mob.GetPosition().Y * TILE_WIDTH - (mob.CollisionBounds.Height / 2);
+            bool AisBelowB = tileJ * TILE_WIDTH + 0.1 > mob.GetPosition().Y * TILE_WIDTH + (mob.CollisionBounds.Height / 2);
             return !(AisToTheRightOfB
               || AisToTheLeftOfB
               || AisAboveB
