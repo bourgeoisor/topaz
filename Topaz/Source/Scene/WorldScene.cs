@@ -29,69 +29,44 @@ namespace Topaz.Scene
 
             var kstate = Keyboard.GetState();
 
-            float deltaMovementAxis = client.Player.Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            float deltaMovementDiag = 0.7f * deltaMovementAxis;
+            Mob.Mob.Direction oldDirection = client.Player.GetDirection();
 
-            Vector2 delta = new Vector2(0, 0);
-
-            if (kstate.IsKeyDown(Keys.W) && kstate.IsKeyDown(Keys.D))
-            {
-                delta.X += deltaMovementDiag;
-                delta.Y -= deltaMovementDiag;
-            }
-            else if (kstate.IsKeyDown(Keys.W) && kstate.IsKeyDown(Keys.A))
-            {
-                delta.X -= deltaMovementDiag;
-                delta.Y -= deltaMovementDiag;
-            }
-            else if (kstate.IsKeyDown(Keys.S) && kstate.IsKeyDown(Keys.D))
-            {
-                delta.X += deltaMovementDiag;
-                delta.Y += deltaMovementDiag;
-            }
+            if (kstate.IsKeyDown(Keys.W) && kstate.IsKeyDown(Keys.A))
+                client.Player.SetDirection(Mob.Mob.Direction.NorthWest);
+            else if (kstate.IsKeyDown(Keys.W) && kstate.IsKeyDown(Keys.D))
+                client.Player.SetDirection(Mob.Mob.Direction.NorthEast);
             else if (kstate.IsKeyDown(Keys.S) && kstate.IsKeyDown(Keys.A))
-            {
-                delta.X -= deltaMovementDiag;
-                delta.Y += deltaMovementDiag;
-            }
-
+                client.Player.SetDirection(Mob.Mob.Direction.SouthWest);
+            else if (kstate.IsKeyDown(Keys.S) && kstate.IsKeyDown(Keys.D))
+                client.Player.SetDirection(Mob.Mob.Direction.SouthEast);
             else if (kstate.IsKeyDown(Keys.W))
-            {
-                delta.Y -= deltaMovementAxis;
-                client.Player.Direction = 3;
-            }
-
-            else if (kstate.IsKeyDown(Keys.S))
-            {
-                delta.Y += deltaMovementAxis;
-                client.Player.Direction = 0;
-            }
-
+                client.Player.SetDirection(Mob.Mob.Direction.North);
             else if (kstate.IsKeyDown(Keys.A))
-            {
-                delta.X -= deltaMovementAxis;
-                client.Player.Direction = 1;
-            }
-
+                client.Player.SetDirection(Mob.Mob.Direction.West);
+            else if (kstate.IsKeyDown(Keys.S))
+                client.Player.SetDirection(Mob.Mob.Direction.South);
             else if (kstate.IsKeyDown(Keys.D))
-            {
-                delta.X += deltaMovementAxis;
-                client.Player.Direction = 2;
-            }
+                client.Player.SetDirection(Mob.Mob.Direction.East);
             else
-            {
-                client.Player.AnimationFrame = 1;
-            }
+                client.Player.SetDirection(Mob.Mob.Direction.None);
 
-            delta = GetDeltaBeforeCollision(delta);
 
-            if (delta.X != 0 || delta.Y != 0)
-            {
-                client.Player.AnimationFrame += (float)gameTime.ElapsedGameTime.TotalSeconds * 5;
-                if (client.Player.AnimationFrame >= 4) client.Player.AnimationFrame = 0;
 
+            /// Send movement changes
+            if (client.Player.GetDirection() != oldDirection)
                 client.SendPlayerMove();
-            }
+
+
+
+            // client player
+            //client.Player.Update(gameTime);
+
+            // other characters
+            foreach (Mob.Player player in client.Players.Values)
+                player.Update(gameTime);
+
+
+
 
             // Map changes
             if (Engine.Input.Instance.LeftButtonDown())
@@ -118,93 +93,7 @@ namespace Topaz.Scene
             }
         }
 
-        public Vector2 GetDeltaBeforeCollision(Vector2 delta)
-        {
-            if (delta.X > 0)
-            {
-                while (delta.X > 0)
-                {
-                    client.Player.Move(delta.X, 0);
-                    if (IsCollision(client.Player))
-                        client.Player.Move(-delta.X, 0);
-                    else
-                        break;
-                    delta.X -= 0.03f;
-                    if (delta.X < 0) delta.X = 0;
-                }
-            } else
-            {
-                while (delta.X < 0)
-                {
-                    client.Player.Move(delta.X, 0);
-                    if (IsCollision(client.Player))
-                        client.Player.Move(-delta.X, 0);
-                    else
-                        break;
-                    delta.X += 0.03f;
-                    if (delta.X > 0) delta.X = 0;
-                }
-            }
-
-            if (delta.Y > 0)
-            {
-                while (delta.Y > 0)
-                {
-                    client.Player.Move(0, delta.Y);
-                    if (IsCollision(client.Player))
-                        client.Player.Move(0, -delta.Y);
-                    else
-                        break;
-                    delta.Y -= 0.03f;
-                    if (delta.Y < 0) delta.Y = 0;
-                }
-            } else
-            {
-                while (delta.Y < 0)
-                {
-                    client.Player.Move(0, delta.Y);
-                    if (IsCollision(client.Player))
-                        client.Player.Move(0, -delta.Y);
-                    else
-                        break;
-                    delta.Y += 0.03f;
-                    if (delta.Y > 0) delta.Y = 0;
-                }
-            }
-
-            return delta;
-        }
-
-        public bool IsCollision(Mob.Player player)
-        {
-            int currX = (int)Math.Floor(GetCoordinates().X);
-            int currY = (int)Math.Floor(GetCoordinates().Y);
-
-            for (int j = -1; j < 2; j++)
-            {
-                for (int i = -1; i < 2; i++)
-                {
-                    if (client.Map.Map2[currY + j, currX + i] != -1 && AABB(currY + j, currX + i, player))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public bool AABB(int tileJ, int tileI, Mob.Player player)
-        {
-            bool AisToTheRightOfB = tileI * TILE_WIDTH + 0.1 > GetCoordinates().X * TILE_WIDTH + (player.CollisionBounds.Width/2);
-            bool AisToTheLeftOfB = tileI * TILE_WIDTH + TILE_WIDTH - 0.1 < GetCoordinates().X * TILE_WIDTH - (player.CollisionBounds.Width/2);
-            bool AisAboveB = tileJ * TILE_WIDTH + TILE_WIDTH - 0.1 < GetCoordinates().Y * TILE_WIDTH - (player.CollisionBounds.Height/2);
-            bool AisBelowB = tileJ * TILE_WIDTH + 0.1 > GetCoordinates().Y * TILE_WIDTH + (player.CollisionBounds.Height / 2);
-            return !(AisToTheRightOfB
-              || AisToTheLeftOfB
-              || AisAboveB
-              || AisBelowB);
-        }
+        
 
         public void Draw(GameTime gameTime)
         {
@@ -257,7 +146,7 @@ namespace Topaz.Scene
             }
 
             // character
-            client.Player.Draw(gameTime);
+            //client.Player.Draw(gameTime);
 
             // other characters
             foreach (Mob.Player player in client.Players.Values)

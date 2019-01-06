@@ -112,7 +112,8 @@ namespace Topaz.Networking
             {
                 localId = msg.ReadInt64();
                 players.Add(localId, new Player());
-                players[localId].IsClient = true;
+                players[localId].LoadContent();
+                players[localId].DrawAtOrigin = true;
                 player = players[localId];
             }
 
@@ -146,6 +147,7 @@ namespace Topaz.Networking
                 float y = msg.ReadFloat();
 
                 players.Add(id, new Player());
+                players[id].LoadContent();
                 players[id].Position = new Vector2(x, y);
             }
 
@@ -154,9 +156,13 @@ namespace Topaz.Networking
                 long id = msg.ReadInt64();
                 float x = msg.ReadFloat();
                 float y = msg.ReadFloat();
+                Mob.Mob.Direction direction = (Mob.Mob.Direction)msg.ReadInt32();
 
                 if (players.ContainsKey(id))
+                {
                     players[id].Position = new Vector2(x, y);
+                    players[id].SetDirection(direction);
+                }
             }
 
             if (type == MessageType.MapChanged)
@@ -188,6 +194,7 @@ namespace Topaz.Networking
 
             msg.Write(player.Position.X);
             msg.Write(player.Position.Y);
+            msg.Write((int)player.GetDirection());
 
             SendMessage(msg, NetDeliveryMethod.ReliableOrdered, 2);
         }
