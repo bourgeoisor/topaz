@@ -8,12 +8,13 @@ namespace Topaz.Networking
 {
     public sealed class Server
     {
-        Engine.Logger logger = new Engine.Logger("Server");
+        Engine.Logger _logger = new Engine.Logger("Server");
 
-        Thread thread;
-        NetServer server;
-        Dictionary<long, Networking.Connection> connections;
-        World.Map map;
+        Thread _thread;
+        NetServer _server;
+
+        Dictionary<long, Networking.Connection> _connections;
+        World.Chunk _map;
 
         private static readonly Lazy<Server> lazy =
             new Lazy<Server>(() => new Server());
@@ -26,38 +27,38 @@ namespace Topaz.Networking
 
         public void Initialize()
         {
-            logger.Info("Starting...");
+            _logger.Info("Starting...");
 
-            map = new World.Map();
-            map.GenerateRandom();
-            connections = new Dictionary<long, Networking.Connection>();
+            _map = new World.Chunk();
+            _map.GenerateRandom();
+            _connections = new Dictionary<long, Networking.Connection>();
 
             NetPeerConfiguration config = new NetPeerConfiguration(Properties.Resources.Title);
             config.Port = 12345;
             config.EnableUPnP = true;
             config.ConnectionTimeout = 10;
 
-            server = new NetServer(config);
-            server.Start();
+            _server = new NetServer(config);
+            _server.Start();
 
-            thread = new Thread(ServerThread);
-            thread.Start();
+            _thread = new Thread(ServerThread);
+            _thread.Start();
 
-            logger.Info("Started.");
+            _logger.Info("Started.");
         }
 
         public void Terminate()
         {
-            if (thread != null)
+            if (_thread != null)
             {
-                server.Shutdown("terminating");
-                thread.Abort();
+                _server.Shutdown("terminating");
+                _thread.Abort();
             }
         }
 
         public void ForwardPort()
         {
-            server.UPnP.ForwardPort(12345, Properties.Resources.Title);
+            _server.UPnP.ForwardPort(12345, Properties.Resources.Title);
         }
 
         public void ServerThread()
@@ -66,12 +67,12 @@ namespace Topaz.Networking
             while (Engine.Window.Instance.State == Engine.Window.WindowState.Running)
             {
                 Thread.Sleep(5);
-                while ((msg = server.ReadMessage()) != null)
+                while ((msg = _server.ReadMessage()) != null)
                 {
                     switch (msg.MessageType)
                     {
                         case NetIncomingMessageType.StatusChanged:
-                            logger.Info("StatusChanged received: " + msg.SenderConnection.Status);
+                            _logger.Info("StatusChanged received: " + msg.SenderConnection.Status);
                             HandleStatusChanged(msg);
                             break;
                         case NetIncomingMessageType.Data:
@@ -79,38 +80,38 @@ namespace Topaz.Networking
                             break;
                         case NetIncomingMessageType.VerboseDebugMessage:
                         case NetIncomingMessageType.DebugMessage:
-                            logger.Debug(msg.ReadString());
+                            _logger.Debug(msg.ReadString());
                             break;
                         case NetIncomingMessageType.WarningMessage:
-                            logger.Warn(msg.ReadString());
+                            _logger.Warn(msg.ReadString());
                             break;
                         case NetIncomingMessageType.ErrorMessage:
-                            logger.Error(msg.ReadString());
+                            _logger.Error(msg.ReadString());
                             break;
                         default:
-                            logger.Warn("Unhandled MessageType: " + msg.MessageType);
+                            _logger.Warn("Unhandled MessageType: " + msg.MessageType);
                             break;
                     }
-                    server.Recycle(msg);
+                    _server.Recycle(msg);
                 }
             }
 
-            logger.Info("Terminated.");
+            _logger.Info("Terminated.");
         }
 
         public void HandleStatusChanged(NetIncomingMessage msg)
         {
             if (msg.SenderConnection.Status == NetConnectionStatus.Connected)
             {
-                connections.Add(msg.SenderConnection.RemoteUniqueIdentifier, new Networking.Connection(msg.SenderConnection));
+                _connections.Add(msg.SenderConnection.RemoteUniqueIdentifier, new Networking.Connection(msg.SenderConnection));
                 SendConnectionInfo(msg.SenderConnection);
                 SendMap(msg.SenderConnection);
-                SendPlayerInfo(connections[msg.SenderConnection.RemoteUniqueIdentifier]);
+                SendPlayerInfo(_connections[msg.SenderConnection.RemoteUniqueIdentifier]);
             }
 
             if (msg.SenderConnection.Status == NetConnectionStatus.Disconnected)
             {
-                connections.Remove(msg.SenderConnection.RemoteUniqueIdentifier);
+                _connections.Remove(msg.SenderConnection.RemoteUniqueIdentifier);
                 SendPlayerDisconnected(msg.SenderConnection);
             }
         }
@@ -125,8 +126,8 @@ namespace Topaz.Networking
                 float y = msg.ReadFloat();
                 Mob.Mob.Direction direction = (Mob.Mob.Direction)msg.ReadInt32();
 
-                connections[msg.SenderConnection.RemoteUniqueIdentifier].Player.SetPosition(new Vector2(x, y));
-                connections[msg.SenderConnection.RemoteUniqueIdentifier].Player.SetDirection(direction);
+                _connections[msg.SenderConnection.RemoteUniqueIdentifier].Player.SetCoordinates(new Vector2(x, y));
+                _connections[msg.SenderConnection.RemoteUniqueIdentifier].Player.SetDirection(direction);
 
                 SendPlayerMove(msg.SenderConnection.RemoteUniqueIdentifier);
             }
@@ -137,7 +138,7 @@ namespace Topaz.Networking
                 int i = msg.ReadInt32();
                 int tile = msg.ReadInt32();
 
-                map.Map2[j, i] = tile;
+                _map.Layer2[j, i] = tile;
 
                 SendMapChange(j, i, tile);
             }
@@ -145,14 +146,14 @@ namespace Topaz.Networking
 
         public NetOutgoingMessage CreateMessage(MessageType type)
         {
-            NetOutgoingMessage msg = server.CreateMessage();
+            NetOutgoingMessage msg = _server.CreateMessage();
             msg.Write((int)type);
             return msg;
         }
 
         public void SendMessage(NetOutgoingMessage msg, NetConnection recipient, NetDeliveryMethod method, int sequenceChannel)
         {
-            server.SendMessage(msg, recipient, method, sequenceChannel);
+            _server.SendMessage(msg, recipient, method, sequenceChannel);
         }
 
         public void SendMessage(NetOutgoingMessage msg, List<NetConnection> recipients, NetDeliveryMethod method, int sequenceChannel)
@@ -160,7 +161,7 @@ namespace Topaz.Networking
             if (recipients.Count == 0)
                 return;
 
-            server.SendMessage(msg, recipients, method, sequenceChannel);
+            _server.SendMessage(msg, recipients, method, sequenceChannel);
         }
 
         public void SendConnectionInfo(NetConnection connection)
@@ -169,50 +170,50 @@ namespace Topaz.Networking
 
             msg.Write(connection.RemoteUniqueIdentifier);
 
-            server.SendMessage(msg, connection, NetDeliveryMethod.ReliableOrdered, 1);
+            _server.SendMessage(msg, connection, NetDeliveryMethod.ReliableOrdered, 1);
         }
 
         public void SendMap(NetConnection connection)
         {
             NetOutgoingMessage msg = CreateMessage(MessageType.MapInfo);
 
-            msg.Write(map.Map1.GetLength(0));
-            msg.Write(map.Map1.GetLength(1));
-            for (int j = 0; j < map.Map1.GetLength(0); j++)
+            msg.Write(_map.Layer1.GetLength(0));
+            msg.Write(_map.Layer1.GetLength(1));
+            for (int j = 0; j < _map.Layer1.GetLength(0); j++)
             {
-                for (int i = 0; i < map.Map1.GetLength(1); i++)
+                for (int i = 0; i < _map.Layer1.GetLength(1); i++)
                 {
-                    msg.Write(map.Map1[j, i]);
+                    msg.Write(_map.Layer1[j, i]);
                 }
             }
-            for (int j = 0; j < map.Map2.GetLength(0); j++)
+            for (int j = 0; j < _map.Layer2.GetLength(0); j++)
             {
-                for (int i = 0; i < map.Map2.GetLength(1); i++)
+                for (int i = 0; i < _map.Layer2.GetLength(1); i++)
                 {
-                    msg.Write(map.Map2[j, i]);
+                    msg.Write(_map.Layer2[j, i]);
                 }
             }
 
-            server.SendMessage(msg, connection, NetDeliveryMethod.ReliableOrdered, 1);
+            _server.SendMessage(msg, connection, NetDeliveryMethod.ReliableOrdered, 1);
         }
 
         private void SendPlayerInfo(Networking.Connection connection)
         {
             List<NetConnection> recipients = new List<NetConnection>();
 
-            foreach (long id in connections.Keys)
+            foreach (long id in _connections.Keys)
             {
                 if (id != connection.NetConnection.RemoteUniqueIdentifier)
                 {
-                    recipients.Add(connections[id].NetConnection);
+                    recipients.Add(_connections[id].NetConnection);
 
                     // Send existing players to newly connected player
                     NetOutgoingMessage msg = CreateMessage(MessageType.PlayerConnected);
 
                     msg.Write(id);
-                    msg.Write(connections[id].Player.GetPosition().X);
-                    msg.Write(connections[id].Player.GetPosition().Y);
-                    msg.Write((int)connections[id].Player.GetDirection());
+                    msg.Write(_connections[id].Player.GetCoordinates().X);
+                    msg.Write(_connections[id].Player.GetCoordinates().Y);
+                    msg.Write((int)_connections[id].Player.GetDirection());
 
                     SendMessage(msg, connection.NetConnection, NetDeliveryMethod.ReliableOrdered, 1);
                 }
@@ -223,8 +224,8 @@ namespace Topaz.Networking
                 NetOutgoingMessage msg = CreateMessage(MessageType.PlayerConnected);
 
                 msg.Write(connection.NetConnection.RemoteUniqueIdentifier);
-                msg.Write(connection.Player.GetPosition().X);
-                msg.Write(connection.Player.GetPosition().Y);
+                msg.Write(connection.Player.GetCoordinates().X);
+                msg.Write(connection.Player.GetCoordinates().Y);
                 msg.Write((int)connection.Player.GetDirection());
 
                 SendMessage(msg, recipients, NetDeliveryMethod.ReliableOrdered, 1);
@@ -234,10 +235,10 @@ namespace Topaz.Networking
         public void SendPlayerDisconnected(NetConnection connection)
         {
             List<NetConnection> recipients = new List<NetConnection>();
-            foreach (long id in connections.Keys)
-                recipients.Add(connections[id].NetConnection);
+            foreach (long id in _connections.Keys)
+                recipients.Add(_connections[id].NetConnection);
 
-            foreach (long id in connections.Keys)
+            foreach (long id in _connections.Keys)
             {
                 NetOutgoingMessage msg = CreateMessage(MessageType.PlayerDisconnected);
 
@@ -250,31 +251,31 @@ namespace Topaz.Networking
         public void SendPlayerMove(long srcId)
         {
             List<NetConnection> recipients = new List<NetConnection>();
-            foreach (long id in connections.Keys)
-                recipients.Add(connections[id].NetConnection);
+            foreach (long id in _connections.Keys)
+                recipients.Add(_connections[id].NetConnection);
 
             NetOutgoingMessage nmsg = CreateMessage(MessageType.PlayerMoved);
             nmsg.Write(srcId);
-            nmsg.Write(connections[srcId].Player.GetPosition().X);
-            nmsg.Write(connections[srcId].Player.GetPosition().Y);
-            nmsg.Write((int)connections[srcId].Player.GetDirection());
+            nmsg.Write(_connections[srcId].Player.GetCoordinates().X);
+            nmsg.Write(_connections[srcId].Player.GetCoordinates().Y);
+            nmsg.Write((int)_connections[srcId].Player.GetDirection());
 
-            server.SendMessage(nmsg, recipients, NetDeliveryMethod.ReliableOrdered, 2);
+            _server.SendMessage(nmsg, recipients, NetDeliveryMethod.ReliableOrdered, 2);
         }
 
         public void SendMapChange(int j, int i, int tile)
         {
             List<NetConnection> recipients = new List<NetConnection>();
-            foreach (long id in connections.Keys)
-                recipients.Add(connections[id].NetConnection);
+            foreach (long id in _connections.Keys)
+                recipients.Add(_connections[id].NetConnection);
             
             NetOutgoingMessage nmsg = CreateMessage(MessageType.MapChanged);
 
             nmsg.Write(j);
             nmsg.Write(i);
-            nmsg.Write(map.Map2[j, i]);
+            nmsg.Write(_map.Layer2[j, i]);
 
-            server.SendMessage(nmsg, recipients, NetDeliveryMethod.ReliableOrdered, 2);
+            _server.SendMessage(nmsg, recipients, NetDeliveryMethod.ReliableOrdered, 2);
         }
     }
 }

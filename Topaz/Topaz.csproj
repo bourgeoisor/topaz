@@ -60,7 +60,7 @@
     <Compile Include="Source\Networking\Server.cs" />
     <Compile Include="Source\Scene\SceneManager.cs" />
     <Compile Include="Source\Scene\WorldScene.cs" />
-    <Compile Include="Source\World\Map.cs" />
+    <Compile Include="Source\World\Chunk.cs" />
     <Compile Include="Topaz.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

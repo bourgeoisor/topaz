@@ -6,8 +6,8 @@ namespace Topaz.Engine
 {
     public sealed class Input
     {
-        KeyboardState lastKeyboardState;
-        MouseState lastMouseState;
+        KeyboardState _lastKeyboardState;
+        MouseState _lastMouseState;
 
         private static readonly Lazy<Input> lazy =
             new Lazy<Input>(() => new Input());
@@ -20,8 +20,8 @@ namespace Topaz.Engine
 
         public void Update(GameTime gameTime)
         {
-            lastKeyboardState = Keyboard.GetState();
-            lastMouseState = Mouse.GetState();
+            _lastKeyboardState = Keyboard.GetState();
+            _lastMouseState = Mouse.GetState();
         }
 
         public bool IsKeyDown(Keys key)
@@ -31,12 +31,12 @@ namespace Topaz.Engine
 
         public bool IsKeyPressed(Keys key)
         {
-            return Keyboard.GetState().IsKeyDown(key) && !lastKeyboardState.IsKeyDown(key);
+            return Keyboard.GetState().IsKeyDown(key) && !_lastKeyboardState.IsKeyDown(key);
         }
 
         public bool LeftButtonPressed()
         {
-            return Mouse.GetState().LeftButton == ButtonState.Pressed && lastMouseState.LeftButton == ButtonState.Released;
+            return Mouse.GetState().LeftButton == ButtonState.Pressed && _lastMouseState.LeftButton == ButtonState.Released;
         }
 
         public bool LeftButtonDown()
@@ -46,7 +46,7 @@ namespace Topaz.Engine
 
         public bool RightButtonPressed()
         {
-            return Mouse.GetState().RightButton == ButtonState.Pressed && lastMouseState.RightButton == ButtonState.Released;
+            return Mouse.GetState().RightButton == ButtonState.Pressed && _lastMouseState.RightButton == ButtonState.Released;
         }
 
         public bool RightButtonDown()

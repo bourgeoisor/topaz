@@ -6,14 +6,13 @@ namespace Topaz.Scene
 {
     public sealed class SceneManager
     {
-        Interface.DebugInfo debugInfo;
-
+        Interface.DebugInfo _debugInfo;
+        private WorldScene _worldScene;
         private static readonly Lazy<SceneManager> lazy =
             new Lazy<SceneManager>(() => new SceneManager());
 
         public static SceneManager Instance { get { return lazy.Value; } }
 
-        internal WorldScene World { get; set; }
         public bool DisplayBoundaries { get; set; }
 
         private SceneManager()
@@ -22,8 +21,8 @@ namespace Topaz.Scene
 
         public void Initialize()
         {
-            World = new WorldScene();
-            debugInfo = new Interface.DebugInfo(World);
+            _worldScene = new WorldScene();
+            _debugInfo = new Interface.DebugInfo(_worldScene);
 
             DisplayBoundaries = false;
 
@@ -32,7 +31,7 @@ namespace Topaz.Scene
 
         public void LoadContent()
         {
-            World.LoadContent();
+            _worldScene.LoadContent();
         }
 
         public void UnloadContent()
@@ -42,7 +41,7 @@ namespace Topaz.Scene
         public void Update(GameTime gameTime)
         {
             if (Engine.Input.Instance.IsKeyPressed(Keys.F1))
-                debugInfo.Toggle();
+                _debugInfo.ToggleDisplay();
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F2))
                 DisplayBoundaries = !DisplayBoundaries;
@@ -67,14 +66,14 @@ namespace Topaz.Scene
 
             Networking.Client.Instance.HandleMessages();
 
-            World.Update(gameTime);
-            debugInfo.Update(gameTime);
+            _worldScene.Update(gameTime);
+            _debugInfo.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-            World.Draw(gameTime);
-            debugInfo.Draw(gameTime);
+            _worldScene.Draw(gameTime);
+            _debugInfo.Draw(gameTime);
         }
     }
 }

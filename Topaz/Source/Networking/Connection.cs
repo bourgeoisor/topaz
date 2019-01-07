@@ -5,16 +5,16 @@ namespace Topaz.Networking
 {
     class Connection
     {
-        NetConnection netConnection;
-        Mob.Player player;
+        NetConnection _netConnection;
+        Mob.Player _player;
 
         public Connection(NetConnection connection)
         {
-            this.NetConnection = connection;
-            this.player = new Player();
+            _netConnection = connection;
+            _player = new Player();
         }
 
-        public NetConnection NetConnection { get => netConnection; set => netConnection = value; }
-        internal Player Player { get => player; set => player = value; }
+        public NetConnection NetConnection { get => _netConnection; set => _netConnection = value; }
+        internal Player Player { get => _player; set => _player = value; }
     }
 }

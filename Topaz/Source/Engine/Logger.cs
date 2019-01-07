@@ -4,16 +4,16 @@ namespace Topaz.Engine
 {
     class Logger
     {
-        string classifier;
+        string _classifier;
 
         public Logger(string classifier)
         {
-            this.classifier = classifier;
+            _classifier = classifier;
         }
 
         void WriteLine(string msg)
         {
-            Console.WriteLine("[" + classifier + "]\t" + msg);
+            Console.WriteLine("[" + _classifier + "]\t" + msg);
         }
 
         public void Info(string msg)

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Topaz.Engine
@@ -21,7 +20,7 @@ namespace Topaz.Engine
         public Texture2D BlackPixel { get; private set; }
         public Texture2D AlphaRedPixel { get; private set; }
 
-        Dictionary<string, Texture2D> loadedTextures;
+        Dictionary<string, Texture2D> _loadedTextures;
 
         private static readonly Lazy<Content> lazy =
             new Lazy<Content>(() => new Content());
@@ -30,7 +29,7 @@ namespace Topaz.Engine
 
         private Content()
         {
-            loadedTextures = new Dictionary<string, Texture2D>();
+            _loadedTextures = new Dictionary<string, Texture2D>();
         }
 
         public void Initialize(Game game, GraphicsDeviceManager graphics)
@@ -61,12 +60,12 @@ namespace Topaz.Engine
 
         public Texture2D GetTexture(string path)
         {
-            if (!loadedTextures.ContainsKey(path))
+            if (!_loadedTextures.ContainsKey(path))
             {
-                loadedTextures.Add(path, ContentManager.Load<Texture2D>(path));
+                _loadedTextures.Add(path, ContentManager.Load<Texture2D>(path));
             }
 
-            return loadedTextures[path];
+            return _loadedTextures[path];
         }
 
         public void DrawStringOutline(SpriteFont spriteFont, string text, Vector2 position, Color colorBg, Color colorFg, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
