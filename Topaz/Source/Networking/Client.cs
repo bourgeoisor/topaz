@@ -82,7 +82,6 @@ namespace Topaz.Networking
                         _logger.Info("StatusChanged received: " + msg.SenderConnection.Status);
                         break;
                     case NetIncomingMessageType.Data:
-                        Console.WriteLine(msg.PeekInt32());
                         _lastNetMessage = (MessageType)msg.PeekInt32() + "";
                         HandleIncomingData(msg);
                         break;

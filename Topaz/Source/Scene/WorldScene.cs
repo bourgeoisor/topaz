@@ -55,26 +55,25 @@ namespace Topaz.Scene
                 _client.SendPlayerMove();
 
             // Send map changes
-            if (Engine.Input.Instance.LeftButtonDown())
+            if (Engine.Input.Instance.LeftButtonDown() || Engine.Input.Instance.RightButtonDown())
             {
                 int tileX = (int)Math.Floor(GetMouseTileCoordinates().X);
                 int tileY = (int)Math.Floor(GetMouseTileCoordinates().Y);
 
-                if (tileX > 0 && tileX < _client.Map.Layer2.GetLength(1) - 1 && tileY > 0 && tileY < _client.Map.Layer2.GetLength(0) - 1)
-                {
-                    _client.Map.Layer2[(int)Math.Floor(GetMouseTileCoordinates().Y), (int)Math.Floor(GetMouseTileCoordinates().X)] = 16 * 14;
-                    Networking.Client.Instance.SendMapChange((int)Math.Floor(GetMouseTileCoordinates().Y), (int)Math.Floor(GetMouseTileCoordinates().X));
-                }
-            }
-            else if (Engine.Input.Instance.RightButtonDown())
-            {
-                int tileX = (int)Math.Floor(GetMouseTileCoordinates().X);
-                int tileY = (int)Math.Floor(GetMouseTileCoordinates().Y);
+                int i = (int)Math.Floor(GetMouseTileCoordinates().X);
+                int j = (int)Math.Floor(GetMouseTileCoordinates().Y);
+
+                int tileId = -1;
+                if (Engine.Input.Instance.LeftButtonDown())
+                    tileId = 224;
 
                 if (tileX > 0 && tileX < _client.Map.Layer2.GetLength(1) - 1 && tileY > 0 && tileY < _client.Map.Layer2.GetLength(0) - 1)
                 {
-                    _client.Map.Layer2[(int)Math.Floor(GetMouseTileCoordinates().Y), (int)Math.Floor(GetMouseTileCoordinates().X)] = -1;
-                    Networking.Client.Instance.SendMapChange((int)Math.Floor(GetMouseTileCoordinates().Y), (int)Math.Floor(GetMouseTileCoordinates().X));
+                    if (_client.Map.Layer2[j, i] != tileId)
+                    {
+                        _client.Map.Layer2[j, i] = tileId;
+                        Networking.Client.Instance.SendMapChange(j, i);
+                    }
                 }
             }
 
