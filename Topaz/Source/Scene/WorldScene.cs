@@ -12,6 +12,8 @@ namespace Topaz.Scene
         Texture2D _tileset;
         Networking.Client _client;
 
+        int _selectedItem;
+
         public WorldScene()
         {
             _client = Networking.Client.Instance;
@@ -26,6 +28,9 @@ namespace Topaz.Scene
         {
             if (_client.Map.Layer1 == null)
                 return;
+
+            var mstate = Mouse.GetState();
+            _selectedItem = (_selectedItem + Engine.Input.Instance.GetScrollWheelDelta() + 3) % 3;
 
             var kstate = Keyboard.GetState();
 
@@ -65,7 +70,9 @@ namespace Topaz.Scene
 
                 int tileId = -1;
                 if (Engine.Input.Instance.LeftButtonDown())
-                    tileId = 224;
+                {
+                    tileId = _selectedItem + 224;
+                }
 
                 if (tileX > 0 && tileX < _client.Map.Layer2.GetLength(1) - 1 && tileY > 0 && tileY < _client.Map.Layer2.GetLength(0) - 1)
                 {
@@ -135,6 +142,9 @@ namespace Topaz.Scene
             // Draw players
             foreach (Mob.Player player in _client.Players.Values)
                 player.Draw(gameTime);
+
+            // Draw item selection
+            DrawTile(_selectedItem + 224, new Vector2(10, Engine.Window.Instance.GetViewport().Height - 74));
 
             Engine.Content.Instance.SpriteBatch.End();
         }

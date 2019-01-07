@@ -6,6 +6,8 @@ namespace Topaz.Engine
 {
     public sealed class Input
     {
+        const int WHEEL_DELTA = 120;
+
         KeyboardState _lastKeyboardState;
         MouseState _lastMouseState;
 
@@ -52,6 +54,11 @@ namespace Topaz.Engine
         public bool RightButtonDown()
         {
             return Mouse.GetState().RightButton == ButtonState.Pressed;
+        }
+
+        public int GetScrollWheelDelta()
+        {
+            return (Mouse.GetState().ScrollWheelValue - _lastMouseState.ScrollWheelValue) / WHEEL_DELTA;
         }
     }
 }
