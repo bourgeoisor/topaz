@@ -62,18 +62,26 @@ namespace Topaz.Mob
                 case Direction.NorthWest:
                     delta.X -= deltaMovementDiag;
                     delta.Y -= deltaMovementDiag;
+                    if (AnimationDirection != 1 && AnimationDirection != 3)
+                        AnimationDirection = 3;
                     break;
                 case Direction.NorthEast:
                     delta.X += deltaMovementDiag;
                     delta.Y -= deltaMovementDiag;
+                    if (AnimationDirection != 2 && AnimationDirection != 3)
+                        AnimationDirection = 3;
                     break;
                 case Direction.SouthWest:
                     delta.X -= deltaMovementDiag;
                     delta.Y += deltaMovementDiag;
+                    if (AnimationDirection != 0 && AnimationDirection != 1)
+                        AnimationDirection = 0;
                     break;
                 case Direction.SouthEast:
                     delta.X += deltaMovementDiag;
                     delta.Y += deltaMovementDiag;
+                    if (AnimationDirection != 0 && AnimationDirection != 2)
+                        AnimationDirection = 0;
                     break;
                 case Direction.North:
                     delta.Y -= deltaMovementAxis;
