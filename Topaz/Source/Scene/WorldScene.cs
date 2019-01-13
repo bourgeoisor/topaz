@@ -80,6 +80,7 @@ namespace Topaz.Scene
                     {
                         _client.Map.Layer2[j, i] = tileId;
                         Networking.Client.Instance.SendMapChange(j, i);
+                        Engine.Content.Instance.PlaySound("Temp/wat");
                     }
                 }
             }

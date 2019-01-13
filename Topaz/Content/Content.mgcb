@@ -27,6 +27,12 @@
 /processorParam:TextureFormat=Compressed
 /build:Font/VeraMono14.spritefont
 
+#begin Temp/hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Temp/hit.wav
+
 #begin Temp/lucas.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -38,6 +44,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Temp/lucas.png
+
+#begin Temp/song.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Temp/song.ogg
+
+#begin Temp/wat .wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Temp/wat .wav;Temp/wat.wav
 
 #begin Temp/winter.png
 /importer:TextureImporter

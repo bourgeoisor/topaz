@@ -53,10 +53,16 @@ namespace Topaz.Scene
                 Networking.Server.Instance.Initialize();
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F10))
+            {
                 Networking.Client.Instance.Connect("127.0.0.1", 12345);
+                Engine.Content.Instance.PlaySong("Temp/song");
+            }   
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F11))
+            {
                 Networking.Client.Instance.Connect("174.112.39.222", 12345);
+                Engine.Content.Instance.PlaySong("Temp/song");
+            }   
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F12))
             {

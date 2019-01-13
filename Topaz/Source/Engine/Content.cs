@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -21,6 +23,8 @@ namespace Topaz.Engine
         public Texture2D AlphaRedPixel { get; private set; }
 
         Dictionary<string, Texture2D> _loadedTextures;
+        Dictionary<string, SoundEffect> _loadedSounds;
+        Dictionary<string, Song> _loadedSongs;
 
         private static readonly Lazy<Content> lazy =
             new Lazy<Content>(() => new Content());
@@ -30,6 +34,8 @@ namespace Topaz.Engine
         private Content()
         {
             _loadedTextures = new Dictionary<string, Texture2D>();
+            _loadedSounds = new Dictionary<string, SoundEffect>();
+            _loadedSongs = new Dictionary<string, Song>();
         }
 
         public void Initialize(Game game, GraphicsDeviceManager graphics)
@@ -82,6 +88,30 @@ namespace Topaz.Engine
             SpriteBatch.DrawString(spriteFont, text, positionTR, colorBg, 0, origin, scale, effects, layerDepth);
             SpriteBatch.DrawString(spriteFont, text, positionBR, colorBg, 0, origin, scale, effects, layerDepth);
             SpriteBatch.DrawString(spriteFont, text, position, colorFg, 0, origin, scale, effects, layerDepth);
+        }
+
+        public void PlaySong(string path)
+        {
+            if (!_loadedSongs.ContainsKey(path))
+            {
+                _loadedSongs.Add(path, ContentManager.Load<Song>(path));
+            }
+
+            MediaPlayer.Volume = 0.2f;
+            MediaPlayer.Play(_loadedSongs[path]);
+        }
+
+        public void PlaySound(string path)
+        {
+            if (!_loadedSounds.ContainsKey(path))
+            {
+                _loadedSounds.Add(path, ContentManager.Load<SoundEffect>(path));
+            }
+
+            SoundEffectInstance sound = _loadedSounds[path].CreateInstance();
+            sound.Volume = 0.3f;
+            //SoundEffect.MasterVolume
+            sound.Play();
         }
     }
 }
