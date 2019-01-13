@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace Topaz.Scene
 {
@@ -141,7 +142,9 @@ namespace Topaz.Scene
             }
 
             // Draw players
-            foreach (Mob.Player player in _client.Players.Values)
+            List<Mob.Player> players = new List<Mob.Player>(_client.Players.Values);
+            players.Sort((a, b) => a.GetCoordinates().Y.CompareTo(b.GetCoordinates().Y));
+            foreach (Mob.Player player in players)
                 player.Draw(gameTime);
 
             // Draw item selection
