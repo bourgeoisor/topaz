@@ -51,6 +51,7 @@ namespace Topaz.Networking
         {
             if (_thread != null)
             {
+                _server.UPnP.DeleteForwardingRule(12345);
                 _server.Shutdown("terminating");
                 _thread.Abort();
             }
@@ -58,7 +59,11 @@ namespace Topaz.Networking
 
         public void ForwardPort()
         {
-            _server.UPnP.ForwardPort(12345, Properties.Resources.Title);
+            if (_server.UPnP.Status == UPnPStatus.Available)
+            {
+                _server.UPnP.DeleteForwardingRule(12345);
+                _server.UPnP.ForwardPort(12345, Properties.Resources.Title);
+            }   
         }
 
         public void ServerThread()
