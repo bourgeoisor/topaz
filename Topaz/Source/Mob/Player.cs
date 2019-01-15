@@ -6,8 +6,8 @@ namespace Topaz.Mob
     {
         public Player() : base()
         {
-            SpriteBounds = new Rectangle(0, 0, 32, 32);
-            CollisionBounds = new Rectangle(3, 20, 26, 12);
+            SpriteBounds = new Rectangle(0, 0, 16, 16);
+            CollisionBounds = new Rectangle(1, 10, 13, 6);
         }
 
         public void LoadContent()

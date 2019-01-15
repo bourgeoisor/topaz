@@ -8,7 +8,7 @@ namespace Topaz.Scene
 {
     class WorldScene
     {
-        public const int TILE_WIDTH = 32;
+        public const int TILE_WIDTH = 16;
 
         Texture2D _tileset;
         Networking.Client _client;
@@ -22,7 +22,7 @@ namespace Topaz.Scene
 
         public void LoadContent()
         {
-            _tileset = Engine.Content.Instance.GetTexture("Temp/winter");
+            _tileset = Engine.Content.Instance.GetTexture("Temp/tileset");
         }
 
         public void Update(GameTime gameTime)
@@ -72,7 +72,7 @@ namespace Topaz.Scene
                 int tileId = -1;
                 if (Engine.Input.Instance.LeftButtonDown())
                 {
-                    tileId = _selectedItem + 224;
+                    tileId = _selectedItem + 1;
                 }
 
                 if (tileX > 0 && tileX < _client.Map.Layer2.GetLength(1) - 1 && tileY > 0 && tileY < _client.Map.Layer2.GetLength(0) - 1)
@@ -81,7 +81,7 @@ namespace Topaz.Scene
                     {
                         _client.Map.Layer2[j, i] = tileId;
                         Networking.Client.Instance.SendMapChange(j, i);
-                        Engine.Content.Instance.PlaySound("Temp/wat");
+                        Engine.Content.Instance.PlaySound("Temp/hit");
                     }
                 }
             }
@@ -138,7 +138,7 @@ namespace Topaz.Scene
             // Draw selector
             {
                 Vector2 position = new Vector2(origin.X + ((int)Math.Floor(GetMouseTileCoordinates().X) - _client.Player.GetCoordinates().X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + ((int)Math.Floor(GetMouseTileCoordinates().Y) - _client.Player.GetCoordinates().Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
-                DrawTile(10, position);
+                DrawTile(4, position);
             }
 
             // Draw players
@@ -148,7 +148,7 @@ namespace Topaz.Scene
                 player.Draw(gameTime);
 
             // Draw item selection
-            DrawTile(_selectedItem + 224, new Vector2(10, Engine.Window.Instance.GetViewport().Height - 74));
+            DrawTile(_selectedItem + 1, new Vector2(10, Engine.Window.Instance.GetViewport().Height - 74));
 
             Engine.Content.Instance.SpriteBatch.End();
         }

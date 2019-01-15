@@ -26,7 +26,7 @@ namespace Topaz.Interface
             _client = Networking.Client.Instance;
 
             _text = "";
-            _displaying = true;
+            _displaying = false;
         }
 
         public void Update(GameTime gameTime)

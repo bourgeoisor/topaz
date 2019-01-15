@@ -22,7 +22,7 @@
             {
                 for (int i = 0; i < _layer1.GetLength(1); i++)
                 {
-                    _layer1[j, i] = 222;
+                    _layer1[j, i] = 0;
                 }
             }
 
@@ -33,7 +33,7 @@
                 {
                     if (j < 1 || i < 1 || j > _layer2.GetLength(0)-2 || i > _layer2.GetLength(1)-2)
                     {
-                        _layer2[j, i] = 63;
+                        _layer2[j, i] = 1;
                     }
                     else
                     {
