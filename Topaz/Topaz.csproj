@@ -50,6 +50,9 @@
     <Compile Include="Source\Engine\Content.cs" />
     <Compile Include="Source\Engine\Input.cs" />
     <Compile Include="Source\Engine\Logger.cs" />
+    <Compile Include="Source\Engine\Settings.cs" />
+    <Compile Include="Source\Engine\Util\BinarySerialization.cs" />
+    <Compile Include="Source\Engine\Util\XmlSerialization.cs" />
     <Compile Include="Source\Engine\Window.cs" />
     <Compile Include="Source\Interface\DebugInfo.cs" />
     <Compile Include="Source\Mob\Mob.cs" />
