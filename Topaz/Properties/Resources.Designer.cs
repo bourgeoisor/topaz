@@ -70,7 +70,7 @@ namespace Topaz.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 24
+        ///   Looks up a localized string similar to 29
         ///.
         /// </summary>
         internal static string GitCount {
@@ -80,7 +80,7 @@ namespace Topaz.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 4ff09279
+        ///   Looks up a localized string similar to c3b14c57
         ///.
         /// </summary>
         internal static string GitHash {
@@ -99,7 +99,7 @@ namespace Topaz.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to v0.0.4.
+        ///   Looks up a localized string similar to v0.0.5.
         /// </summary>
         internal static string Version {
             get {
