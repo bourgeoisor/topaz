@@ -16,7 +16,7 @@ namespace Topaz.Interface
         Networking.Client _client;
 
         string _text;
-        bool _displaying;
+        bool _display;
 
         public DebugInfo(Scene.WorldScene world)
         {
@@ -26,7 +26,7 @@ namespace Topaz.Interface
             _client = Networking.Client.Instance;
 
             _text = "";
-            _displaying = false;
+            _display = false;
         }
 
         public void Update(GameTime gameTime)
@@ -55,7 +55,7 @@ namespace Topaz.Interface
 
         public void Draw(GameTime gameTime)
         {
-            if (_displaying)
+            if (_display)
             {
                 Vector2 origin = new Vector2(0, 0);
                 Vector2 position = new Vector2(OFFSET_X, OFFSET_Y);
@@ -78,7 +78,7 @@ namespace Topaz.Interface
 
         public void ToggleDisplay()
         {
-            _displaying = !_displaying;
+            _display = !_display;
         }
     }
 }

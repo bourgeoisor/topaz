@@ -13,6 +13,8 @@ namespace Topaz.Scene
         Texture2D _tileset;
         Networking.Client _client;
 
+        Interface.OptionsPanel _optionsPanel;
+
         int _selectedItem;
 
         public WorldScene()
@@ -23,12 +25,23 @@ namespace Topaz.Scene
         public void LoadContent()
         {
             _tileset = Engine.Content.Instance.GetTexture("Temp/tileset");
+
+            _optionsPanel = new Interface.OptionsPanel();
         }
 
         public void Update(GameTime gameTime)
         {
             if (_client.Map.Layer1 == null)
                 return;
+
+            if (Engine.Input.Instance.IsKeyPressed(Keys.O))
+                _optionsPanel.ToggleDisplay();
+
+            if (_optionsPanel.Display)
+            {
+                _optionsPanel.Update(gameTime);
+                if (_optionsPanel.MouseIsIntersecting()) return;
+            }
 
             var mstate = Mouse.GetState();
             _selectedItem = (_selectedItem + Engine.Input.Instance.GetScrollWheelDelta() + 3) % 3;
@@ -149,6 +162,8 @@ namespace Topaz.Scene
 
             // Draw item selection
             DrawTile(_selectedItem + 1, new Vector2(10, Engine.Window.Instance.GetViewport().Height - 74));
+
+            _optionsPanel.Draw(gameTime);
 
             Engine.Content.Instance.SpriteBatch.End();
         }
