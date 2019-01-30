@@ -13,6 +13,13 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Font/TypeWriter8.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Font/TypeWriter8.spritefont
+
 #begin Font/VeraMono.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

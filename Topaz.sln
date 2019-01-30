@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Topaz", "Topaz\Topaz.csproj", "{14EFF7C3-3D7B-49A7-A98D-F85C79AF0744}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Topaz", "Topaz.csproj", "{14EFF7C3-3D7B-49A7-A98D-F85C79AF0744}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {036751EC-D4EC-4C97-983B-4EE593636589}
+		SolutionGuid = {187F2793-A639-4997-93BE-E59E0AFF1DFE}
 	EndGlobalSection
 EndGlobal
