@@ -10,19 +10,22 @@ namespace Topaz.Engine.Interface
         protected Vector2 _relativePosition;
         protected int _width;
         protected int _height;
-        protected Anchor _anchor;
+        protected Anchor _parentAnchor;
+        protected Anchor _alignmentAnchor;
         protected Texture2D _skin;
         protected bool _display;
-
+        
+        public Vector2 RelativePosition { get => _relativePosition; set => _relativePosition = value; }
         public int Width { get => _width; set => _width = value; }
         public int Height { get => _height; set => _height = value; }
-        public Vector2 RelativePosition { get => _relativePosition; set => _relativePosition = value; }
+        public Anchor AlignmentAnchor { get => _alignmentAnchor; set => _alignmentAnchor = value; }
         public bool Display { get => _display; set => _display = value; }
 
         public Widget()
         {
             _relativePosition = new Vector2(0, 0);
-            _anchor = Anchor.TopLeft;
+            _parentAnchor = Anchor.TopLeft;
+            _alignmentAnchor = Anchor.TopLeft;
             _display = true;
         }
 
@@ -46,6 +49,12 @@ namespace Topaz.Engine.Interface
             float x = 0;
             float y = 0;
 
+            float relativePositionX = _relativePosition.X * Engine.Content.DEFAULT_SCALE;
+            float relativePositionY = _relativePosition.Y * Engine.Content.DEFAULT_SCALE;
+
+            float width = _width * Engine.Content.DEFAULT_SCALE;
+            float height = _height * Engine.Content.DEFAULT_SCALE;
+
             float parentWidth = viewport.Width;
             float parentHeight = viewport.Height;
 
@@ -55,35 +64,53 @@ namespace Topaz.Engine.Interface
                 x = absolutePosition.X;
                 y = absolutePosition.Y;
 
-                parentWidth = _parent.Width;
-                parentHeight = _parent.Height;
+                parentWidth = _parent.Width * Engine.Content.DEFAULT_SCALE;
+                parentHeight = _parent.Height * Engine.Content.DEFAULT_SCALE;
             }
 
-            switch(_anchor)
+            switch(_parentAnchor)
             {
                 case Anchor.TopLeft:
-                    x += _relativePosition.X;
-                    y += _relativePosition.Y;
+                    x += relativePositionX;
+                    y += relativePositionY;
                     break;
                 case Anchor.TopRight:
-                    x += parentWidth - _relativePosition.X - _width * Engine.Content.DEFAULT_SCALE;
-                    y += _relativePosition.Y;
+                    x += parentWidth - relativePositionX - width;
+                    y += relativePositionY;
                     break;
                 case Anchor.BottomLeft:
-                    x += _relativePosition.X;
-                    y += parentHeight - _relativePosition.Y - _height * Engine.Content.DEFAULT_SCALE;
+                    x += relativePositionX;
+                    y += parentHeight - relativePositionY - height;
                     break;
                 case Anchor.BottomRight:
-                    x += parentWidth - _relativePosition.X - _width * Engine.Content.DEFAULT_SCALE;
-                    y += parentHeight - _relativePosition.Y - _height * Engine.Content.DEFAULT_SCALE;
+                    x += parentWidth - relativePositionX - width;
+                    y += parentHeight - relativePositionY - height;
                     break;
                 case Anchor.Center:
-                    x += (parentWidth - _width * Engine.Content.DEFAULT_SCALE) / 2 - _relativePosition.X;
-                    y += (parentHeight - _height * Engine.Content.DEFAULT_SCALE) / 2 - _relativePosition.Y;
+                    x += (parentWidth - width) / 2 - relativePositionX;
+                    y += (parentHeight - height) / 2 - relativePositionY;
                     break;
             }
 
             return new Vector2(x, y);
+        }
+
+        public Vector2 OriginPoint()
+        {
+            switch (_alignmentAnchor)
+            {
+                case Anchor.TopLeft:
+                    return new Vector2(0, 0);
+                case Anchor.TopRight:
+                    return new Vector2(_width, 0);
+                case Anchor.BottomLeft:
+                    return new Vector2(0, _height);
+                case Anchor.BottomRight:
+                    return new Vector2(_width, _height);
+                case Anchor.Center:
+                default:
+                    return new Vector2(_width/2, _height/2);
+            }
         }
 
         public void ToggleDisplay()

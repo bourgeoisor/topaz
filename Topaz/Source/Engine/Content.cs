@@ -22,9 +22,9 @@ namespace Topaz.Engine
         public Texture2D BlackPixel { get; private set; }
         public Texture2D AlphaRedPixel { get; private set; }
 
-        Dictionary<string, Texture2D> _loadedTextures;
-        Dictionary<string, SoundEffect> _loadedSounds;
-        Dictionary<string, Song> _loadedSongs;
+        private Dictionary<string, Texture2D> _loadedTextures;
+        private Dictionary<string, SoundEffect> _loadedSounds;
+        private Dictionary<string, Song> _loadedSongs;
 
         private static readonly Lazy<Content> lazy =
             new Lazy<Content>(() => new Content());
@@ -40,15 +40,17 @@ namespace Topaz.Engine
 
         public void Initialize(Game game, GraphicsDeviceManager graphics)
         {
-            this.Graphics = graphics;
-            this.GraphicsDevice = game.GraphicsDevice;
-            this.SpriteBatch = new SpriteBatch(game.GraphicsDevice);
-            this.ContentManager = game.Content;
+            Graphics = graphics;
+            GraphicsDevice = game.GraphicsDevice;
+            SpriteBatch = new SpriteBatch(game.GraphicsDevice);
+            ContentManager = game.Content;
+
+            SyncSettings();
         }
 
         public void LoadContent()
         {
-            Font = ContentManager.Load<SpriteFont>("Font/VeraMono14");
+            Font = ContentManager.Load<SpriteFont>("Font/TypeWriter8");
 
             BlackPixel = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             BlackPixel.SetData<Color>(new Color[] { Color.Black });
@@ -82,7 +84,7 @@ namespace Topaz.Engine
             Vector2 positionBL = new Vector2(position.X - 1, position.Y + 1);
             Vector2 positionTR = new Vector2(position.X + 1, position.Y - 1);
             Vector2 positionBR = new Vector2(position.X + 1, position.Y + 1);
-            
+
             SpriteBatch.DrawString(spriteFont, text, positionTL, colorBg, 0, origin, scale, effects, layerDepth);
             SpriteBatch.DrawString(spriteFont, text, positionBL, colorBg, 0, origin, scale, effects, layerDepth);
             SpriteBatch.DrawString(spriteFont, text, positionTR, colorBg, 0, origin, scale, effects, layerDepth);
@@ -90,27 +92,35 @@ namespace Topaz.Engine
             SpriteBatch.DrawString(spriteFont, text, position, colorFg, 0, origin, scale, effects, layerDepth);
         }
 
+        public void SyncSettings()
+        {
+            if (Engine.Window.Instance.Settings.Audio.Mute)
+            {
+                MediaPlayer.Volume = 0f;
+                SoundEffect.MasterVolume = 0f;
+            }
+            else
+            {
+                MediaPlayer.Volume = 0.2f;
+                SoundEffect.MasterVolume = 0.2f;
+            }
+        }
+
         public void PlaySong(string path)
         {
             if (!_loadedSongs.ContainsKey(path))
-            {
                 _loadedSongs.Add(path, ContentManager.Load<Song>(path));
-            }
-
-            MediaPlayer.Volume = 0.2f;
+            
             MediaPlayer.Play(_loadedSongs[path]);
         }
 
         public void PlaySound(string path)
         {
             if (!_loadedSounds.ContainsKey(path))
-            {
                 _loadedSounds.Add(path, ContentManager.Load<SoundEffect>(path));
-            }
 
             SoundEffectInstance sound = _loadedSounds[path].CreateInstance();
             sound.Volume = 0.3f;
-            //SoundEffect.MasterVolume
             sound.Play();
         }
     }

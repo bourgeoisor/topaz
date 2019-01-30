@@ -163,9 +163,10 @@ namespace Topaz.Scene
             // Draw item selection
             DrawTile(_selectedItem + 1, new Vector2(10, Engine.Window.Instance.GetViewport().Height - 74));
 
-            _optionsPanel.Draw(gameTime);
-
             Engine.Content.Instance.SpriteBatch.End();
+
+            // Draw panels
+            _optionsPanel.Draw(gameTime);
         }
 
         public void DrawTile(int tile, Vector2 position)

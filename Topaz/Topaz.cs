@@ -5,17 +5,17 @@ namespace Topaz
 {
     public class Topaz : Game
     {
-        GraphicsDeviceManager graphics;
+        private readonly GraphicsDeviceManager _graphics;
 
         public Topaz()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
         protected override void Initialize()
         {
-            Engine.Window.Instance.Initialize(this, graphics);
+            Engine.Window.Instance.Initialize(this, _graphics);
 
             base.Initialize();
         }

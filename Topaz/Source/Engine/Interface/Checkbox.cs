@@ -6,11 +6,14 @@ namespace Topaz.Engine.Interface
 {
     class Checkbox : Widget
     {
-        bool _hover;
-        bool _checked;
+        private bool _hover;
+        private bool _checked;
 
-        Action _onChecked;
-        Action _onUnchecked;
+        private Action<bool> _onStateChanged;
+        private Action _onChecked;
+        private Action _onUnchecked;
+
+        public bool Checked { get => _checked; set => _checked = value; }
 
         public Checkbox(Widget parent) : base()
         {
@@ -21,6 +24,11 @@ namespace Topaz.Engine.Interface
 
             _hover = false;
             _checked = false;
+        }
+
+        public void SetOnStateChanged(Action<bool> callback)
+        {
+            _onStateChanged = callback;
         }
 
         public void SetOnChecked(Action callback)
@@ -43,8 +51,10 @@ namespace Topaz.Engine.Interface
                 {
                     _checked = !_checked;
 
-                    if (_checked) _onChecked();
-                    else _onUnchecked();
+                    if (_checked) _onChecked?.Invoke();
+                    else _onUnchecked?.Invoke();
+
+                    _onStateChanged?.Invoke(_checked);
                 }
             }
 
@@ -67,7 +77,7 @@ namespace Topaz.Engine.Interface
                 source,
                 Color.White,
                 0f,
-                new Vector2(0, 0),
+                OriginPoint(),
                 Engine.Content.DEFAULT_SCALE,
                 SpriteEffects.None,
                 0f

@@ -6,7 +6,7 @@ namespace Topaz.Scene
 {
     public sealed class SceneManager
     {
-        Interface.DebugInfo _debugInfo;
+        Interface.DebugPanel _debugInfo;
         private WorldScene _worldScene;
         private static readonly Lazy<SceneManager> lazy =
             new Lazy<SceneManager>(() => new SceneManager());
@@ -22,7 +22,7 @@ namespace Topaz.Scene
         public void Initialize()
         {
             _worldScene = new WorldScene();
-            _debugInfo = new Interface.DebugInfo(_worldScene);
+            _debugInfo = new Interface.DebugPanel(_worldScene);
 
             DisplayBoundaries = false;
 
