@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Topaz
 {
@@ -47,6 +48,13 @@ namespace Topaz
             Engine.Window.Instance.Draw(gameTime);
 
             base.Draw(gameTime);
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            Engine.Window.Instance.Terminate();
+
+            base.OnExiting(sender, args);
         }
     }
 }
