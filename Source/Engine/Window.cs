@@ -58,46 +58,30 @@ namespace Topaz.Engine
             ToggleFullscreen(_settings.Video.Fullscreen);
 
             Engine.Content.Instance.Initialize(game, graphics);
-            Scene.SceneManager.Instance.Initialize();
         }
 
         public void LoadContent()
         {
             Engine.Content.Instance.LoadContent();
-            Scene.SceneManager.Instance.LoadContent();
         }
 
         public void UnloadContent()
         {
             Engine.Content.Instance.UnloadContent();
-            Scene.SceneManager.Instance.UnloadContent();
         }
 
         public void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Terminate();
+            if (Engine.Input.Instance.IsKeyDown(Keys.Escape))
+                _state = WindowState.Terminating;
 
             if (Engine.Input.Instance.IsKeyDown(Keys.LeftControl) && Engine.Input.Instance.IsKeyDown(Keys.Enter))
                 ToggleFullscreen(!_graphics.IsFullScreen);
-
-            Scene.SceneManager.Instance.Update(gameTime);
-            Input.Instance.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-            Scene.SceneManager.Instance.Draw(gameTime);
-        }
-
-        public void Terminate()
-        {
-            _state = WindowState.Terminating;
-
-            Networking.Client.Instance.Disconnect();
-            Networking.Server.Instance.Terminate();
-
-            SaveSettings();
+            GraphicsDevice.Clear(Color.CornflowerBlue);
         }
 
         public void SaveSettings()
