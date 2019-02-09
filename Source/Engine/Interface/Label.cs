@@ -5,23 +5,22 @@ namespace Topaz.Engine.Interface
 {
     class Label : Widget
     {
-        private string _text;
+        public string Text { get; private set; }
 
         public Label(Widget parent) : base()
         {
-            _parent = parent;
+            Parent = parent;
         }
 
         public void Update(GameTime gameTime)
         {
-
         }
 
         public void Draw(GameTime gameTime)
         {
             Engine.Content.Instance.SpriteBatch.DrawString(
                 Content.Instance.Font,
-                _text,
+                Text,
                 AbsolutePosition(),
                 new Color(135, 90, 12),
                 0,
@@ -34,11 +33,10 @@ namespace Topaz.Engine.Interface
 
         public void SetText(string text)
         {
-            _text = text;
-
-            Vector2 size = Content.Instance.Font.MeasureString(text);
-            _width = (int)size.X;
-            _height = (int)size.Y;
+            Vector2 measure = Content.Instance.Font.MeasureString(text);
+            Width = (int)measure.X;
+            Height = (int)measure.Y;
+            Text = text;
         }
     }
 }

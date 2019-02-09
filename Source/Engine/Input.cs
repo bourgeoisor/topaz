@@ -8,8 +8,8 @@ namespace Topaz.Engine
     {
         const int WHEEL_DELTA = 120;
 
-        KeyboardState _lastKeyboardState;
-        MouseState _lastMouseState;
+        private KeyboardState _lastKeyboardState;
+        private  MouseState _lastMouseState;
 
         private static readonly Lazy<Input> lazy =
             new Lazy<Input>(() => new Input());

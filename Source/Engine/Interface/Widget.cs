@@ -6,27 +6,26 @@ namespace Topaz.Engine.Interface
 {
     abstract class Widget
     {
-        protected Widget _parent;
-        protected Vector2 _relativePosition;
-        protected int _width;
-        protected int _height;
-        protected Anchor _parentAnchor;
-        protected Anchor _alignmentAnchor;
-        protected Texture2D _skin;
-        protected bool _display;
-        
-        public Vector2 RelativePosition { get => _relativePosition; set => _relativePosition = value; }
-        public int Width { get => _width; set => _width = value; }
-        public int Height { get => _height; set => _height = value; }
-        public Anchor AlignmentAnchor { get => _alignmentAnchor; set => _alignmentAnchor = value; }
-        public bool Display { get => _display; set => _display = value; }
+        public Widget Parent { get; protected set; }
+        public Texture2D Skin { get; protected set; }
+
+        public Vector2 RelativePosition { get; set; }
+        public int Width { get; protected set; }
+        public int Height { get; protected set; }
+
+        public Anchor ParentAnchor { get; protected set; }
+        public Anchor AlignmentAnchor { get; protected set; }
+
+        public bool IsDisplayed { get; set; }
+
+        public enum Anchor { TopLeft, TopRight, BottomLeft, BottomRight, Center }
 
         public Widget()
         {
-            _relativePosition = new Vector2(0, 0);
-            _parentAnchor = Anchor.TopLeft;
-            _alignmentAnchor = Anchor.TopLeft;
-            _display = true;
+            RelativePosition = new Vector2(0, 0);
+            ParentAnchor = Anchor.TopLeft;
+            AlignmentAnchor = Anchor.TopLeft;
+            IsDisplayed = true;
         }
 
         public bool MouseIsIntersecting()
@@ -36,8 +35,8 @@ namespace Topaz.Engine.Interface
             Rectangle boundingBox = new Rectangle(
                 (int)absolutePosition.X,
                 (int)absolutePosition.Y,
-                (int)Engine.Content.DEFAULT_SCALE * _width,
-                (int)Engine.Content.DEFAULT_SCALE * _height
+                (int)Engine.Content.DEFAULT_SCALE * Width,
+                (int)Engine.Content.DEFAULT_SCALE * Height
             );
             return boundingBox.Contains(mouse.X, mouse.Y);
         }
@@ -49,26 +48,26 @@ namespace Topaz.Engine.Interface
             float x = 0;
             float y = 0;
 
-            float relativePositionX = _relativePosition.X * Engine.Content.DEFAULT_SCALE;
-            float relativePositionY = _relativePosition.Y * Engine.Content.DEFAULT_SCALE;
+            float relativePositionX = RelativePosition.X * Engine.Content.DEFAULT_SCALE;
+            float relativePositionY = RelativePosition.Y * Engine.Content.DEFAULT_SCALE;
 
-            float width = _width * Engine.Content.DEFAULT_SCALE;
-            float height = _height * Engine.Content.DEFAULT_SCALE;
+            float width = Width * Engine.Content.DEFAULT_SCALE;
+            float height = Height * Engine.Content.DEFAULT_SCALE;
 
             float parentWidth = viewport.Width;
             float parentHeight = viewport.Height;
 
-            if (_parent != null)
+            if (Parent != null)
             {
-                Vector2 absolutePosition = _parent.AbsolutePosition();
+                Vector2 absolutePosition = Parent.AbsolutePosition();
                 x = absolutePosition.X;
                 y = absolutePosition.Y;
 
-                parentWidth = _parent.Width * Engine.Content.DEFAULT_SCALE;
-                parentHeight = _parent.Height * Engine.Content.DEFAULT_SCALE;
+                parentWidth = Parent.Width * Engine.Content.DEFAULT_SCALE;
+                parentHeight = Parent.Height * Engine.Content.DEFAULT_SCALE;
             }
 
-            switch(_parentAnchor)
+            switch(ParentAnchor)
             {
                 case Anchor.TopLeft:
                     x += relativePositionX;
@@ -97,34 +96,25 @@ namespace Topaz.Engine.Interface
 
         public Vector2 OriginPoint()
         {
-            switch (_alignmentAnchor)
+            switch (AlignmentAnchor)
             {
                 case Anchor.TopLeft:
                     return new Vector2(0, 0);
                 case Anchor.TopRight:
-                    return new Vector2(_width, 0);
+                    return new Vector2(Width, 0);
                 case Anchor.BottomLeft:
-                    return new Vector2(0, _height);
+                    return new Vector2(0, Height);
                 case Anchor.BottomRight:
-                    return new Vector2(_width, _height);
+                    return new Vector2(Width, Height);
                 case Anchor.Center:
                 default:
-                    return new Vector2(_width/2, _height/2);
+                    return new Vector2(Width / 2, Height / 2);
             }
         }
 
         public void ToggleDisplay()
         {
-            _display = !_display;
+            IsDisplayed = !IsDisplayed;
         }
-    }
-
-    public enum Anchor
-    {
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight,
-        Center
     }
 }

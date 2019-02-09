@@ -13,14 +13,14 @@ namespace Topaz.Interface
 
         public OptionsPanel() : base()
         {
-            _relativePosition = new Vector2(0, 0);
-            _width = 200;
-            _height = 120;
-            _parentAnchor = Engine.Interface.Anchor.Center;
-            _skin = Engine.Content.Instance.GetTexture("Interface/options");
+            RelativePosition = new Vector2(0, 0);
+            Width = 200;
+            Height = 120;
+            ParentAnchor = Anchor.Center;
+            Skin = Engine.Content.Instance.GetTexture("Interface/options");
             
             _muteCheckbox = new Engine.Interface.Checkbox(this);
-            _muteCheckbox.Checked = Engine.Window.Instance.Settings.Audio.Mute;
+            _muteCheckbox.IsChecked = Engine.Window.Instance.Settings.Audio.Mute;
             _muteCheckbox.RelativePosition = new Vector2(4, 4);
             _muteCheckbox.SetOnStateChanged(delegate (bool isChecked) {
                 Engine.Window.Instance.Settings.Audio.Mute = isChecked;
@@ -32,7 +32,7 @@ namespace Topaz.Interface
             _muteLabel.SetText("Mute Audio");
 
             _fullscreenCheckbox = new Engine.Interface.Checkbox(this);
-            _fullscreenCheckbox.Checked = Engine.Window.Instance.Settings.Video.Fullscreen;
+            _fullscreenCheckbox.IsChecked = Engine.Window.Instance.Settings.Video.Fullscreen;
             _fullscreenCheckbox.RelativePosition = new Vector2(4, 16);
             _fullscreenCheckbox.SetOnStateChanged(delegate (bool isChecked) {
                 Engine.Window.Instance.ToggleFullscreen(isChecked);
@@ -45,7 +45,7 @@ namespace Topaz.Interface
 
         public void Update(GameTime gameTime)
         {
-            if (!_display) return;
+            if (!IsDisplayed) return;
             if (!MouseIsIntersecting()) return;
 
             _muteCheckbox.Update(gameTime);
@@ -54,12 +54,12 @@ namespace Topaz.Interface
 
         public void Draw(GameTime gameTime)
         {
-            if (!_display) return;
+            if (!IsDisplayed) return;
 
             Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
 
             Engine.Content.Instance.SpriteBatch.Draw(
-                _skin,
+                Skin,
                 AbsolutePosition(),
                 null,
                 Color.White,

@@ -4,7 +4,7 @@ namespace Topaz.Engine
 {
     class Logger
     {
-        string _classifier;
+        private readonly string _classifier;
 
         public Logger(string classifier)
         {

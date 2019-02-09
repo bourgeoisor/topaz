@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Topaz.Mob
+namespace Topaz.Entity
 {
-    class Player : Mob
+    class Player : Entity
     {
         public Player() : base()
         {

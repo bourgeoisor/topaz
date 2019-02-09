@@ -7,19 +7,13 @@ namespace Topaz.Engine
 {
     public sealed class Window
     {
-        const string SETTINGS_FILE_PATH = "settings.txt";
+        private const string SETTINGS_FILE_PATH = "settings.txt";
 
-        private WindowState _state;
-        private Settings _settings;
-        private Game _game;
-        private GraphicsDeviceManager _graphics;
-        private GraphicsDevice _graphicsDevice;
-
-        public WindowState State { get => _state; set => _state = value; }
-        public Settings Settings { get => _settings; set => _settings = value; }
-        public Game Game { get => _game; set => _game = value; }
-        public GraphicsDeviceManager Graphics { get => _graphics; private set => _graphics = value; }
-        public GraphicsDevice GraphicsDevice { get => _graphicsDevice; private set => _graphicsDevice = value; }
+        public WindowState State { get; set; }
+        public Settings Settings { get; set; }
+        public Game Game { get; set; }
+        public GraphicsDeviceManager Graphics { get; private set; }
+        public GraphicsDevice GraphicsDevice { get; private set; }
 
         public enum WindowState { Running, Terminating }
 
@@ -30,32 +24,32 @@ namespace Topaz.Engine
 
         private Window()
         {
-            _state = WindowState.Running;
+            State = WindowState.Running;
 
-            _settings = Engine.Util.XmlSerialization.ReadFromXmlFile<Engine.Settings>(SETTINGS_FILE_PATH);
-            if (_settings == null)
-                _settings = new Engine.Settings();
+            Settings = Engine.Util.XmlSerialization.ReadFromXmlFile<Engine.Settings>(SETTINGS_FILE_PATH);
+            if (Settings == null)
+                Settings = new Engine.Settings();
 
-            Engine.Util.XmlSerialization.WriteToXmlFile<Engine.Settings>(SETTINGS_FILE_PATH, _settings);
+            Engine.Util.XmlSerialization.WriteToXmlFile<Engine.Settings>(SETTINGS_FILE_PATH, Settings);
         }
 
         public void Initialize(Game game, GraphicsDeviceManager graphics)
         {
-            _game = game;
-            _graphics = graphics;
-            _graphicsDevice = game.GraphicsDevice;
+            Game = game;
+            Graphics = graphics;
+            GraphicsDevice = game.GraphicsDevice;
 
             string title = Properties.Resources.Title;
             if (Properties.Resources.DevMode == "true")
                 title += " " + Properties.Resources.Version + "-" + Properties.Resources.GitCount + "-" + Properties.Resources.GitHash;
 
-            _game.Window.Title = title;
-            _game.Window.AllowUserResizing = true;
-            _game.IsMouseVisible = true;
-            _game.IsFixedTimeStep = _settings.Video.Vsync;
-            _graphics.SynchronizeWithVerticalRetrace = _settings.Video.Vsync;
+            Game.Window.Title = title;
+            Game.Window.AllowUserResizing = true;
+            Game.IsMouseVisible = true;
+            Game.IsFixedTimeStep = Settings.Video.Vsync;
+            Graphics.SynchronizeWithVerticalRetrace = Settings.Video.Vsync;
 
-            ToggleFullscreen(_settings.Video.Fullscreen);
+            ToggleFullscreen(Settings.Video.Fullscreen);
 
             Engine.Content.Instance.Initialize(game, graphics);
         }
@@ -73,10 +67,10 @@ namespace Topaz.Engine
         public void Update(GameTime gameTime)
         {
             if (Engine.Input.Instance.IsKeyDown(Keys.Escape))
-                _state = WindowState.Terminating;
+                State = WindowState.Terminating;
 
             if (Engine.Input.Instance.IsKeyDown(Keys.LeftControl) && Engine.Input.Instance.IsKeyDown(Keys.Enter))
-                ToggleFullscreen(!_graphics.IsFullScreen);
+                ToggleFullscreen(!Graphics.IsFullScreen);
         }
 
         public void Draw(GameTime gameTime)
@@ -86,35 +80,35 @@ namespace Topaz.Engine
 
         public void SaveSettings()
         {
-            _settings.Video.Fullscreen = _graphics.IsFullScreen;
-            if (!_graphics.IsFullScreen)
+            Settings.Video.Fullscreen = Graphics.IsFullScreen;
+            if (!Graphics.IsFullScreen)
             {
-                _settings.Video.WindowedScreenWidth = GetViewport().Width;
-                _settings.Video.WindowedScreenHeight = GetViewport().Height;
+                Settings.Video.WindowedScreenWidth = GetViewport().Width;
+                Settings.Video.WindowedScreenHeight = GetViewport().Height;
             }
-            Engine.Util.XmlSerialization.WriteToXmlFile<Engine.Settings>(SETTINGS_FILE_PATH, _settings);
+            Engine.Util.XmlSerialization.WriteToXmlFile<Engine.Settings>(SETTINGS_FILE_PATH, Settings);
         }
         
         public Viewport GetViewport()
         {
-            return _graphicsDevice.Viewport;
+            return GraphicsDevice.Viewport;
         }
 
         public void ToggleFullscreen(bool toggle)
         {
             if (toggle)
             {
-                _graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-                _graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+                Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
             }
             else
             {
-                _graphics.PreferredBackBufferWidth = _settings.Video.WindowedScreenWidth;
-                _graphics.PreferredBackBufferHeight = _settings.Video.WindowedScreenHeight;
+                Graphics.PreferredBackBufferWidth = Settings.Video.WindowedScreenWidth;
+                Graphics.PreferredBackBufferHeight = Settings.Video.WindowedScreenHeight;
             }
 
-            _graphics.IsFullScreen = toggle;
-            _graphics.ApplyChanges();
+            Graphics.IsFullScreen = toggle;
+            Graphics.ApplyChanges();
         }
     }
 }

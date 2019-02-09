@@ -6,73 +6,71 @@ namespace Topaz.Engine.Interface
 {
     class Checkbox : Widget
     {
-        private bool _hover;
-        private bool _checked;
+        public Action<bool> OnStateChanged { get; private set; }
+        public Action OnChecked { get; private set; }
+        public Action OnUnchecked { get; private set; }
 
-        private Action<bool> _onStateChanged;
-        private Action _onChecked;
-        private Action _onUnchecked;
-
-        public bool Checked { get => _checked; set => _checked = value; }
+        public bool IsChecked { get; set; }
+        public bool IsHovered { get; private set; }
 
         public Checkbox(Widget parent) : base()
         {
-            _parent = parent;
-            _width = 9;
-            _height = 9;
-            _skin = Engine.Content.Instance.GetTexture("Interface/checkbox");
+            Parent = parent;
+            Width = 9;
+            Height = 9;
+            Skin = Engine.Content.Instance.GetTexture("Interface/checkbox");
 
-            _hover = false;
-            _checked = false;
+            IsHovered = false;
+            IsChecked = false;
         }
 
         public void SetOnStateChanged(Action<bool> callback)
         {
-            _onStateChanged = callback;
+            OnStateChanged = callback;
         }
 
         public void SetOnChecked(Action callback)
         {
-            _onChecked = callback;
+            OnChecked = callback;
         }
 
         public void SetOnUnchecked(Action callback)
         {
-            _onUnchecked = callback;
+            OnUnchecked = callback;
         }
 
         public void Update(GameTime gameTime)
         {
-            if (!_display) return;
+            if (!IsDisplayed) return;
 
             if (MouseIsIntersecting())
             {
                 if (Engine.Input.Instance.LeftButtonPressed())
                 {
-                    _checked = !_checked;
+                    IsChecked = !IsChecked;
 
-                    if (_checked) _onChecked?.Invoke();
-                    else _onUnchecked?.Invoke();
+                    if (IsChecked) OnChecked?.Invoke();
+                    else OnUnchecked?.Invoke();
 
-                    _onStateChanged?.Invoke(_checked);
+                    OnStateChanged?.Invoke(IsChecked);
                 }
             }
 
-            _hover = MouseIsIntersecting();
+            IsHovered = MouseIsIntersecting();
         }
 
         public void Draw(GameTime gameTime)
         {
-            if (!_display) return;
+            if (!IsDisplayed) return;
 
             int sprite = 0;
-            if (_hover && !_checked) sprite = 1;
-            if (!_hover && _checked) sprite = 2;
-            if (_hover && _checked) sprite = 3;
+            if (IsHovered && !IsChecked) sprite = 1;
+            if (!IsHovered && IsChecked) sprite = 2;
+            if (IsHovered && IsChecked) sprite = 3;
             Rectangle source = new Rectangle(9*sprite, 0, 9, 9);
 
             Engine.Content.Instance.SpriteBatch.Draw(
-                _skin,
+                Skin,
                 AbsolutePosition(),
                 source,
                 Color.White,
