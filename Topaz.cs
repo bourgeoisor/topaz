@@ -15,7 +15,7 @@ namespace Topaz
 
         protected override void Initialize()
         {
-            Engine.Window.Instance.Initialize(this, _graphics);
+            Engine.Core.Instance.Initialize(this, _graphics);
             Scene.SceneManager.Instance.Initialize();
 
             base.Initialize();
@@ -23,22 +23,22 @@ namespace Topaz
 
         protected override void LoadContent()
         {
-            Engine.Window.Instance.LoadContent();
+            Engine.Core.Instance.LoadContent();
             Scene.SceneManager.Instance.LoadContent();
         }
 
         protected override void UnloadContent()
         {
-            Engine.Window.Instance.UnloadContent();
+            Engine.Core.Instance.UnloadContent();
             Scene.SceneManager.Instance.UnloadContent();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (Engine.Window.Instance.State == Engine.Window.WindowState.Terminating)
+            if (Engine.Core.Instance.State == Engine.Core.EngineState.Terminating)
                 Exit();
 
-            Engine.Window.Instance.Update(gameTime);
+            Engine.Core.Instance.Update(gameTime);
             Scene.SceneManager.Instance.Update(gameTime);
             Engine.Input.Instance.Update(gameTime);
 
@@ -47,7 +47,7 @@ namespace Topaz
 
         protected override void Draw(GameTime gameTime)
         {
-            Engine.Window.Instance.Draw(gameTime);
+            Engine.Core.Instance.Draw(gameTime);
             Scene.SceneManager.Instance.Draw(gameTime);
 
             base.Draw(gameTime);
@@ -55,8 +55,8 @@ namespace Topaz
 
         protected override void OnExiting(object sender, EventArgs args)
         {
-            Engine.Window.Instance.State = Engine.Window.WindowState.Terminating;
-            Engine.Window.Instance.SaveSettings();
+            Engine.Core.Instance.State = Engine.Core.EngineState.Terminating;
+            Engine.Core.Instance.SaveSettings();
 
             Networking.Client.Instance.Disconnect();
             Networking.Server.Instance.Terminate();

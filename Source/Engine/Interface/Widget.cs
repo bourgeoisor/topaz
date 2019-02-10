@@ -16,7 +16,7 @@ namespace Topaz.Engine.Interface
         public Anchor ParentAnchor { get; protected set; }
         public Anchor AlignmentAnchor { get; protected set; }
 
-        public bool IsDisplayed { get; set; }
+        public bool IsDisplaying { get; set; }
 
         public enum Anchor { TopLeft, TopRight, BottomLeft, BottomRight, Center }
 
@@ -25,7 +25,7 @@ namespace Topaz.Engine.Interface
             RelativePosition = new Vector2(0, 0);
             ParentAnchor = Anchor.TopLeft;
             AlignmentAnchor = Anchor.TopLeft;
-            IsDisplayed = true;
+            IsDisplaying = true;
         }
 
         public bool MouseIsIntersecting()
@@ -43,7 +43,7 @@ namespace Topaz.Engine.Interface
 
         public Vector2 AbsolutePosition()
         {
-            Viewport viewport = Engine.Window.Instance.GetViewport();
+            Viewport viewport = Engine.Core.Instance.GetViewport();
 
             float x = 0;
             float y = 0;
@@ -114,7 +114,7 @@ namespace Topaz.Engine.Interface
 
         public void ToggleDisplay()
         {
-            IsDisplayed = !IsDisplayed;
+            IsDisplaying = !IsDisplaying;
         }
     }
 }

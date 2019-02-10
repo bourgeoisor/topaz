@@ -37,7 +37,7 @@ namespace Topaz.Scene
             if (Engine.Input.Instance.IsKeyPressed(Keys.O))
                 _optionsPanel.ToggleDisplay();
 
-            if (_optionsPanel.IsDisplayed)
+            if (_optionsPanel.IsDisplaying)
             {
                 _optionsPanel.Update(gameTime);
                 if (_optionsPanel.MouseIsIntersecting()) return;
@@ -109,7 +109,7 @@ namespace Topaz.Scene
             if (_client.Map.Layer1 == null)
                 return;
 
-            Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
+            Vector2 origin = new Vector2(Engine.Core.Instance.GetViewport().Width / 2, Engine.Core.Instance.GetViewport().Height / 2);
             Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
 
             // Layer 1
@@ -161,7 +161,7 @@ namespace Topaz.Scene
                 player.Draw(gameTime);
 
             // Draw item selection
-            DrawTile(_selectedItem + 1, new Vector2(10, Engine.Window.Instance.GetViewport().Height - 74));
+            DrawTile(_selectedItem + 1, new Vector2(10, Engine.Core.Instance.GetViewport().Height - 74));
 
             Engine.Content.Instance.SpriteBatch.End();
 
@@ -174,7 +174,7 @@ namespace Topaz.Scene
             int row = tile / 16;
             int col = tile % 16;
 
-            Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
+            Vector2 origin = new Vector2(Engine.Core.Instance.GetViewport().Width / 2, Engine.Core.Instance.GetViewport().Height / 2);
             Rectangle source = new Rectangle(col * TILE_WIDTH, row * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 
             Engine.Content.Instance.SpriteBatch.Draw(
@@ -192,8 +192,8 @@ namespace Topaz.Scene
 
         public Vector2 GetMouseTileCoordinates()
         {
-            float dx = Mouse.GetState().X - (Engine.Window.Instance.GetViewport().Width / 2);
-            float dy = Mouse.GetState().Y - (Engine.Window.Instance.GetViewport().Height / 2);
+            float dx = Mouse.GetState().X - (Engine.Core.Instance.GetViewport().Width / 2);
+            float dy = Mouse.GetState().Y - (Engine.Core.Instance.GetViewport().Height / 2);
 
             return new Vector2(_client.Player.Coordinates.X + (dx / TILE_WIDTH / Engine.Content.DEFAULT_SCALE), _client.Player.Coordinates.Y + (dy / TILE_WIDTH / Engine.Content.DEFAULT_SCALE));
         }

@@ -56,7 +56,7 @@
     <Compile Include="Source\Engine\Settings.cs" />
     <Compile Include="Source\Engine\Util\BinarySerialization.cs" />
     <Compile Include="Source\Engine\Util\XmlSerialization.cs" />
-    <Compile Include="Source\Engine\Window.cs" />
+    <Compile Include="Source\Engine\Core.cs" />
     <Compile Include="Source\Interface\DebugPanel.cs" />
     <Compile Include="Source\Interface\OptionsPanel.cs" />
     <Compile Include="Source\Engine\Interface\Panel.cs" />

@@ -69,7 +69,7 @@ namespace Topaz.Networking
         public void ServerThread()
         {   
             NetIncomingMessage msg;
-            while (Engine.Window.Instance.State == Engine.Window.WindowState.Running)
+            while (Engine.Core.Instance.State == Engine.Core.EngineState.Running)
             {
                 Thread.Sleep(5);
                 while ((msg = _server.ReadMessage()) != null)

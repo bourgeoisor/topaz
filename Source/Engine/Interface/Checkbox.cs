@@ -41,7 +41,7 @@ namespace Topaz.Engine.Interface
 
         public void Update(GameTime gameTime)
         {
-            if (!IsDisplayed) return;
+            if (!IsDisplaying) return;
 
             if (MouseIsIntersecting())
             {
@@ -61,7 +61,7 @@ namespace Topaz.Engine.Interface
 
         public void Draw(GameTime gameTime)
         {
-            if (!IsDisplayed) return;
+            if (!IsDisplaying) return;
 
             int sprite = 0;
             if (IsHovered && !IsChecked) sprite = 1;

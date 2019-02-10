@@ -8,7 +8,7 @@ namespace Topaz.Entity
     {
         public const float OFFSET_TOLERANCE = 0.15f;
 
-        private Engine.Logger logger = new Engine.Logger("Entity");
+        public Engine.Logger Logger { get; set; }
 
         public Vector2 Coordinates { get; private set; }
         public Direction MovementDirection { get; private set; }
@@ -24,6 +24,7 @@ namespace Topaz.Entity
 
         public Entity()
         {
+            Logger = new Engine.Logger("Entity");
             MovementDirection = Direction.None;
             SetCoordinates(new Vector2(5, 5));
             Speed = 5;
@@ -109,7 +110,7 @@ namespace Topaz.Entity
             int step = (int)Math.Floor(AnimationFrame);
             if (step == 3) step = 1;
 
-            Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
+            Vector2 origin = new Vector2(Engine.Core.Instance.GetViewport().Width / 2, Engine.Core.Instance.GetViewport().Height / 2);
             Vector2 position = new Vector2(
                 origin.X + (Coordinates.X - Networking.Client.Instance.Player.Coordinates.X) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE),
                 origin.Y + (Coordinates.Y - Networking.Client.Instance.Player.Coordinates.Y) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE)
@@ -163,7 +164,8 @@ namespace Topaz.Entity
             
             if (deltaX > OFFSET_TOLERANCE || deltaY > OFFSET_TOLERANCE)
             {
-                logger.Debug("Correcting entity offset of " + deltaX + "," + deltaY);
+                if (Coordinates.X != 0 || Coordinates.Y != 0)
+                    Logger.Debug("Correcting entity offset of " + deltaX + "," + deltaY);
                 Coordinates = position;
             }
         }

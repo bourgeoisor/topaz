@@ -12,6 +12,7 @@ namespace Topaz.Networking
         {
             NetConnection = connection;
             Player = new Player();
+            Player.Logger.IsLogging = false;
         }
     }
 }

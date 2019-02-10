@@ -94,7 +94,7 @@ namespace Topaz.Engine
 
         public void SyncSettings()
         {
-            if (Engine.Window.Instance.Settings.Audio.Mute)
+            if (Engine.Core.Instance.Settings.Audio.Mute)
             {
                 MediaPlayer.Volume = 0f;
                 SoundEffect.MasterVolume = 0f;

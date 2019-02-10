@@ -19,7 +19,7 @@ namespace Topaz.Interface
 
         public void Update(GameTime gameTime)
         {
-            Rectangle viewport = Engine.Window.Instance.GetViewport().Bounds;
+            Rectangle viewport = Engine.Core.Instance.GetViewport().Bounds;
             MouseState mouse = Mouse.GetState();
             GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
 
@@ -38,7 +38,7 @@ namespace Topaz.Interface
 
         public void Draw(GameTime gameTime)
         {
-            if (!IsDisplayed) return;
+            if (!IsDisplaying) return;
 
             Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
 

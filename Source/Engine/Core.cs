@@ -5,26 +5,26 @@ using System;
 
 namespace Topaz.Engine
 {
-    public sealed class Window
+    public sealed class Core
     {
         private const string SETTINGS_FILE_PATH = "settings.txt";
 
-        public WindowState State { get; set; }
+        public EngineState State { get; set; }
         public Settings Settings { get; set; }
         public Game Game { get; set; }
         public GraphicsDeviceManager Graphics { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        public enum WindowState { Running, Terminating }
+        public enum EngineState { Running, Terminating }
 
-        private static readonly Lazy<Window> lazy =
-            new Lazy<Window>(() => new Window());
+        private static readonly Lazy<Core> lazy =
+            new Lazy<Core>(() => new Core());
 
-        public static Window Instance { get { return lazy.Value; } }
+        public static Core Instance { get { return lazy.Value; } }
 
-        private Window()
+        private Core()
         {
-            State = WindowState.Running;
+            State = EngineState.Running;
 
             Settings = Engine.Util.XmlSerialization.ReadFromXmlFile<Engine.Settings>(SETTINGS_FILE_PATH);
             if (Settings == null)
@@ -67,7 +67,7 @@ namespace Topaz.Engine
         public void Update(GameTime gameTime)
         {
             if (Engine.Input.Instance.IsKeyDown(Keys.Escape))
-                State = WindowState.Terminating;
+                State = EngineState.Terminating;
 
             if (Engine.Input.Instance.IsKeyDown(Keys.LeftControl) && Engine.Input.Instance.IsKeyDown(Keys.Enter))
                 ToggleFullscreen(!Graphics.IsFullScreen);
