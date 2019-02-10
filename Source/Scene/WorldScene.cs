@@ -10,12 +10,12 @@ namespace Topaz.Scene
     {
         public const int TILE_WIDTH = 16;
 
-        Texture2D _tileset;
-        Networking.Client _client;
+        private Texture2D _tileset;
+        private Networking.Client _client;
 
-        Interface.OptionsPanel _optionsPanel;
+        private Interface.OptionsPanel _optionsPanel;
 
-        int _selectedItem;
+        private int _selectedItem;
 
         public WorldScene()
         {
@@ -37,7 +37,7 @@ namespace Topaz.Scene
             if (Engine.Input.Instance.IsKeyPressed(Keys.O))
                 _optionsPanel.ToggleDisplay();
 
-            if (_optionsPanel.Display)
+            if (_optionsPanel.IsDisplaying)
             {
                 _optionsPanel.Update(gameTime);
                 if (_optionsPanel.MouseIsIntersecting()) return;
@@ -48,29 +48,29 @@ namespace Topaz.Scene
 
             var kstate = Keyboard.GetState();
 
-            Mob.Mob.Direction oldDirection = _client.Player.GetDirection();
+            Entity.Entity.Direction oldDirection = _client.Player.MovementDirection;
 
             if (kstate.IsKeyDown(Keys.W) && kstate.IsKeyDown(Keys.A))
-                _client.Player.SetDirection(Mob.Mob.Direction.NorthWest);
+                _client.Player.SetDirection(Entity.Entity.Direction.NorthWest);
             else if (kstate.IsKeyDown(Keys.W) && kstate.IsKeyDown(Keys.D))
-                _client.Player.SetDirection(Mob.Mob.Direction.NorthEast);
+                _client.Player.SetDirection(Entity.Entity.Direction.NorthEast);
             else if (kstate.IsKeyDown(Keys.S) && kstate.IsKeyDown(Keys.A))
-                _client.Player.SetDirection(Mob.Mob.Direction.SouthWest);
+                _client.Player.SetDirection(Entity.Entity.Direction.SouthWest);
             else if (kstate.IsKeyDown(Keys.S) && kstate.IsKeyDown(Keys.D))
-                _client.Player.SetDirection(Mob.Mob.Direction.SouthEast);
+                _client.Player.SetDirection(Entity.Entity.Direction.SouthEast);
             else if (kstate.IsKeyDown(Keys.W))
-                _client.Player.SetDirection(Mob.Mob.Direction.North);
+                _client.Player.SetDirection(Entity.Entity.Direction.North);
             else if (kstate.IsKeyDown(Keys.A))
-                _client.Player.SetDirection(Mob.Mob.Direction.West);
+                _client.Player.SetDirection(Entity.Entity.Direction.West);
             else if (kstate.IsKeyDown(Keys.S))
-                _client.Player.SetDirection(Mob.Mob.Direction.South);
+                _client.Player.SetDirection(Entity.Entity.Direction.South);
             else if (kstate.IsKeyDown(Keys.D))
-                _client.Player.SetDirection(Mob.Mob.Direction.East);
+                _client.Player.SetDirection(Entity.Entity.Direction.East);
             else
-                _client.Player.SetDirection(Mob.Mob.Direction.None);
+                _client.Player.SetDirection(Entity.Entity.Direction.None);
 
             // Send direction update
-            if (_client.Player.GetDirection() != oldDirection)
+            if (_client.Player.MovementDirection != oldDirection)
                 _client.SendPlayerMove();
 
             // Send map changes
@@ -100,7 +100,7 @@ namespace Topaz.Scene
             }
 
             // Update each players
-            foreach (Mob.Player player in _client.Players.Values)
+            foreach (Entity.Player player in _client.Players.Values)
                 player.Update(gameTime);
         }
 
@@ -109,7 +109,7 @@ namespace Topaz.Scene
             if (_client.Map.Layer1 == null)
                 return;
 
-            Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
+            Vector2 origin = new Vector2(Engine.Core.Instance.GetViewport().Width / 2, Engine.Core.Instance.GetViewport().Height / 2);
             Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
 
             // Layer 1
@@ -117,7 +117,7 @@ namespace Topaz.Scene
             {
                 for (int i = 0; i < _client.Map.Layer1.GetLength(1); i++)
                 {
-                    Vector2 position = new Vector2(origin.X + (i - _client.Player.GetCoordinates().X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + (j - _client.Player.GetCoordinates().Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
+                    Vector2 position = new Vector2(origin.X + (i - _client.Player.Coordinates.X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + (j - _client.Player.Coordinates.Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
                     DrawTile(_client.Map.Layer1[j, i], position);
                 }
             }
@@ -129,10 +129,10 @@ namespace Topaz.Scene
                 {
                     if (_client.Map.Layer2[j, i] != -1)
                     {
-                        Vector2 position = new Vector2(origin.X + (i - _client.Player.GetCoordinates().X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + (j - _client.Player.GetCoordinates().Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
+                        Vector2 position = new Vector2(origin.X + (i - _client.Player.Coordinates.X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + (j - _client.Player.Coordinates.Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
                         DrawTile(_client.Map.Layer2[j, i], position);
 
-                        if (SceneManager.Instance.DisplayBoundaries)
+                        if (SceneManager.Instance.IsDisplayedDebug)
                             Engine.Content.Instance.SpriteBatch.Draw(
                                 Engine.Content.Instance.AlphaRedPixel,
                                 position,
@@ -150,18 +150,18 @@ namespace Topaz.Scene
 
             // Draw selector
             {
-                Vector2 position = new Vector2(origin.X + ((int)Math.Floor(GetMouseTileCoordinates().X) - _client.Player.GetCoordinates().X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + ((int)Math.Floor(GetMouseTileCoordinates().Y) - _client.Player.GetCoordinates().Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
+                Vector2 position = new Vector2(origin.X + ((int)Math.Floor(GetMouseTileCoordinates().X) - _client.Player.Coordinates.X) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE), origin.Y + ((int)Math.Floor(GetMouseTileCoordinates().Y) - _client.Player.Coordinates.Y) * (TILE_WIDTH * Engine.Content.DEFAULT_SCALE));
                 DrawTile(4, position);
             }
 
             // Draw players
-            List<Mob.Player> players = new List<Mob.Player>(_client.Players.Values);
-            players.Sort((a, b) => a.GetCoordinates().Y.CompareTo(b.GetCoordinates().Y));
-            foreach (Mob.Player player in players)
+            List<Entity.Player> players = new List<Entity.Player>(_client.Players.Values);
+            players.Sort((a, b) => a.Coordinates.Y.CompareTo(b.Coordinates.Y));
+            foreach (Entity.Player player in players)
                 player.Draw(gameTime);
 
             // Draw item selection
-            DrawTile(_selectedItem + 1, new Vector2(10, Engine.Window.Instance.GetViewport().Height - 74));
+            DrawTile(_selectedItem + 1, new Vector2(10, Engine.Core.Instance.GetViewport().Height - 74));
 
             Engine.Content.Instance.SpriteBatch.End();
 
@@ -174,7 +174,7 @@ namespace Topaz.Scene
             int row = tile / 16;
             int col = tile % 16;
 
-            Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
+            Vector2 origin = new Vector2(Engine.Core.Instance.GetViewport().Width / 2, Engine.Core.Instance.GetViewport().Height / 2);
             Rectangle source = new Rectangle(col * TILE_WIDTH, row * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 
             Engine.Content.Instance.SpriteBatch.Draw(
@@ -192,10 +192,10 @@ namespace Topaz.Scene
 
         public Vector2 GetMouseTileCoordinates()
         {
-            float dx = Mouse.GetState().X - (Engine.Window.Instance.GetViewport().Width / 2);
-            float dy = Mouse.GetState().Y - (Engine.Window.Instance.GetViewport().Height / 2);
+            float dx = Mouse.GetState().X - (Engine.Core.Instance.GetViewport().Width / 2);
+            float dy = Mouse.GetState().Y - (Engine.Core.Instance.GetViewport().Height / 2);
 
-            return new Vector2(_client.Player.GetCoordinates().X + (dx / TILE_WIDTH / Engine.Content.DEFAULT_SCALE), _client.Player.GetCoordinates().Y + (dy / TILE_WIDTH / Engine.Content.DEFAULT_SCALE));
+            return new Vector2(_client.Player.Coordinates.X + (dx / TILE_WIDTH / Engine.Content.DEFAULT_SCALE), _client.Player.Coordinates.Y + (dy / TILE_WIDTH / Engine.Content.DEFAULT_SCALE));
         }
     }
 }

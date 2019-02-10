@@ -2,16 +2,16 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Topaz.Mob
+namespace Topaz.Entity
 {
-    class Mob
+    class Entity
     {
         public const float OFFSET_TOLERANCE = 0.15f;
 
-        Engine.Logger logger = new Engine.Logger("Mob");
+        public Engine.Logger Logger { get; set; }
 
-        Vector2 _coordinates;
-        Direction _direction;
+        public Vector2 Coordinates { get; private set; }
+        public Direction MovementDirection { get; private set; }
 
         public Texture2D Sprite { get; set; }
 
@@ -22,11 +22,12 @@ namespace Topaz.Mob
         public float AnimationFrame { get; set; }
         public bool DrawAtOrigin { get; set; }
 
-        public Mob()
+        public Entity()
         {
-            _direction = Direction.None;
-            this.SetCoordinates(new Vector2(5, 5));
-            this.Speed = 5;
+            Logger = new Engine.Logger("Entity");
+            MovementDirection = Direction.None;
+            SetCoordinates(new Vector2(5, 5));
+            Speed = 5;
             AnimationDirection = 0;
             AnimationFrame = 1;
         }
@@ -46,7 +47,7 @@ namespace Topaz.Mob
 
         public virtual void Update(GameTime gameTime)
         {
-            if (_direction == Direction.None)
+            if (MovementDirection == Direction.None)
                 return;
 
             AnimationFrame += (float)gameTime.ElapsedGameTime.TotalSeconds * 5;
@@ -57,7 +58,7 @@ namespace Topaz.Mob
 
             Vector2 delta = new Vector2(0, 0);
 
-            switch (_direction)
+            switch (MovementDirection)
             {
                 case Direction.NorthWest:
                     delta.X -= deltaMovementDiag;
@@ -109,10 +110,10 @@ namespace Topaz.Mob
             int step = (int)Math.Floor(AnimationFrame);
             if (step == 3) step = 1;
 
-            Vector2 origin = new Vector2(Engine.Window.Instance.GetViewport().Width / 2, Engine.Window.Instance.GetViewport().Height / 2);
+            Vector2 origin = new Vector2(Engine.Core.Instance.GetViewport().Width / 2, Engine.Core.Instance.GetViewport().Height / 2);
             Vector2 position = new Vector2(
-                origin.X + (_coordinates.X - Networking.Client.Instance.Player._coordinates.X) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE),
-                origin.Y + (_coordinates.Y - Networking.Client.Instance.Player._coordinates.Y) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE)
+                origin.X + (Coordinates.X - Networking.Client.Instance.Player.Coordinates.X) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE),
+                origin.Y + (Coordinates.Y - Networking.Client.Instance.Player.Coordinates.Y) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE)
             );
             Rectangle source = new Rectangle(step * SpriteBounds.Width, AnimationDirection * SpriteBounds.Height, SpriteBounds.Width, SpriteBounds.Height);
 
@@ -131,7 +132,7 @@ namespace Topaz.Mob
                 0f
             );
 
-            if (Scene.SceneManager.Instance.DisplayBoundaries)
+            if (Scene.SceneManager.Instance.IsDisplayedDebug)
                 Engine.Content.Instance.SpriteBatch.Draw(
                     Engine.Content.Instance.AlphaRedPixel,
                     position,
@@ -145,43 +146,33 @@ namespace Topaz.Mob
                 );
         }
 
-        public Direction GetDirection()
-        {
-            return _direction;
-        }
-
         public void SetDirection(Direction direction)
         {
-            if (direction != _direction)
+            if (direction != MovementDirection)
             {
-                _direction = direction;
+                MovementDirection = direction;
 
-                if (_direction == Direction.None)
+                if (MovementDirection == Direction.None)
                     AnimationFrame = 1;
             }
         }
 
-        public Vector2 GetCoordinates()
-        {
-            return _coordinates;
-        }
-
         public void SetCoordinates(Vector2 position)
         {
-            float deltaX = Math.Abs(position.X - _coordinates.X);
-            float deltaY = Math.Abs(position.Y - _coordinates.Y);
+            float deltaX = Math.Abs(position.X - Coordinates.X);
+            float deltaY = Math.Abs(position.Y - Coordinates.Y);
             
             if (deltaX > OFFSET_TOLERANCE || deltaY > OFFSET_TOLERANCE)
             {
-                logger.Debug("Correcting entity offset of " + deltaX + "," + deltaY);
-                _coordinates = position;
+                if (Coordinates.X != 0 || Coordinates.Y != 0)
+                    Logger.Debug("Correcting entity offset of " + deltaX + "," + deltaY);
+                Coordinates = position;
             }
         }
 
         public void Move(float deltaX, float deltaY)
         {
-            _coordinates.X += deltaX;
-            _coordinates.Y += deltaY;
+            Coordinates = new Vector2(Coordinates.X + deltaX, Coordinates.Y + deltaY);
         }
 
         Vector2 GetSpriteOrigin()
@@ -189,15 +180,15 @@ namespace Topaz.Mob
             return new Vector2(CollisionBounds.X + CollisionBounds.Width / 2, CollisionBounds.Y + CollisionBounds.Height / 2);
         }
 
-        public Vector2 GetDeltaBeforeCollision(Mob mob, Vector2 delta)
+        public Vector2 GetDeltaBeforeCollision(Entity entity, Vector2 delta)
         {
             if (delta.X > 0)
             {
                 while (delta.X > 0)
                 {
-                    mob.Move(delta.X, 0);
-                    if (IsCollision(mob))
-                        mob.Move(-delta.X, 0);
+                    entity.Move(delta.X, 0);
+                    if (IsCollision(entity))
+                        entity.Move(-delta.X, 0);
                     else
                         break;
                     delta.X -= 0.03f;
@@ -208,9 +199,9 @@ namespace Topaz.Mob
             {
                 while (delta.X < 0)
                 {
-                    mob.Move(delta.X, 0);
-                    if (IsCollision(mob))
-                        mob.Move(-delta.X, 0);
+                    entity.Move(delta.X, 0);
+                    if (IsCollision(entity))
+                        entity.Move(-delta.X, 0);
                     else
                         break;
                     delta.X += 0.03f;
@@ -222,9 +213,9 @@ namespace Topaz.Mob
             {
                 while (delta.Y > 0)
                 {
-                    mob.Move(0, delta.Y);
-                    if (IsCollision(mob))
-                        mob.Move(0, -delta.Y);
+                    entity.Move(0, delta.Y);
+                    if (IsCollision(entity))
+                        entity.Move(0, -delta.Y);
                     else
                         break;
                     delta.Y -= 0.03f;
@@ -235,9 +226,9 @@ namespace Topaz.Mob
             {
                 while (delta.Y < 0)
                 {
-                    mob.Move(0, delta.Y);
-                    if (IsCollision(mob))
-                        mob.Move(0, -delta.Y);
+                    entity.Move(0, delta.Y);
+                    if (IsCollision(entity))
+                        entity.Move(0, -delta.Y);
                     else
                         break;
                     delta.Y += 0.03f;
@@ -248,16 +239,16 @@ namespace Topaz.Mob
             return delta;
         }
 
-        public bool IsCollision(Mob mob)
+        public bool IsCollision(Entity entity)
         {
-            int currX = (int)Math.Floor(mob.GetCoordinates().X);
-            int currY = (int)Math.Floor(mob.GetCoordinates().Y);
+            int currX = (int)Math.Floor(entity.Coordinates.X);
+            int currY = (int)Math.Floor(entity.Coordinates.Y);
 
             for (int j = -1; j < 2; j++)
             {
                 for (int i = -1; i < 2; i++)
                 {
-                    if (Networking.Client.Instance.Map.Layer2[currY + j, currX + i] != -1 && AABB(currY + j, currX + i, mob))
+                    if (Networking.Client.Instance.Map.Layer2[currY + j, currX + i] != -1 && AABB(currY + j, currX + i, entity))
                     {
                         return true;
                     }
@@ -267,14 +258,14 @@ namespace Topaz.Mob
             return false;
         }
 
-        public bool AABB(int tileJ, int tileI, Mob mob)
+        public bool AABB(int tileJ, int tileI, Entity entity)
         {
             int tileWidth = Scene.WorldScene.TILE_WIDTH;
             
-            bool AisToTheRightOfB = tileI * tileWidth + 0.1 > mob.GetCoordinates().X * tileWidth + (mob.CollisionBounds.Width / 2);
-            bool AisToTheLeftOfB = tileI * tileWidth + tileWidth - 0.1 < mob.GetCoordinates().X * tileWidth - (mob.CollisionBounds.Width / 2);
-            bool AisAboveB = tileJ * tileWidth + tileWidth - 0.1 < mob.GetCoordinates().Y * tileWidth - (mob.CollisionBounds.Height / 2);
-            bool AisBelowB = tileJ * tileWidth + 0.1 > mob.GetCoordinates().Y * tileWidth + (mob.CollisionBounds.Height / 2);
+            bool AisToTheRightOfB = tileI * tileWidth + 0.1 > entity.Coordinates.X * tileWidth + (entity.CollisionBounds.Width / 2);
+            bool AisToTheLeftOfB = tileI * tileWidth + tileWidth - 0.1 < entity.Coordinates.X * tileWidth - (entity.CollisionBounds.Width / 2);
+            bool AisAboveB = tileJ * tileWidth + tileWidth - 0.1 < entity.Coordinates.Y * tileWidth - (entity.CollisionBounds.Height / 2);
+            bool AisBelowB = tileJ * tileWidth + 0.1 > entity.Coordinates.Y * tileWidth + (entity.CollisionBounds.Height / 2);
             return !(AisToTheRightOfB
               || AisToTheLeftOfB
               || AisAboveB

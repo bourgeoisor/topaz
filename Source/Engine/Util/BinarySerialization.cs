@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Topaz.Engine.Util
 {
@@ -8,7 +9,7 @@ namespace Topaz.Engine.Util
         {
             using (Stream stream = File.Open(filePath, append ? FileMode.Append : FileMode.Create))
             {
-                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
                 binaryFormatter.Serialize(stream, objectToWrite);
             }
         }
@@ -17,7 +18,7 @@ namespace Topaz.Engine.Util
         {
             using (Stream stream = File.Open(filePath, FileMode.Open))
             {
-                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
                 return (T)binaryFormatter.Deserialize(stream);
             }
         }

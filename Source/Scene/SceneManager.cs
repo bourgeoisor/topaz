@@ -6,14 +6,15 @@ namespace Topaz.Scene
 {
     public sealed class SceneManager
     {
-        Interface.DebugPanel _debugInfo;
+        private Interface.DebugPanel _debugInfo;
         private WorldScene _worldScene;
+
+        public bool IsDisplayedDebug { get; set; }
+
         private static readonly Lazy<SceneManager> lazy =
             new Lazy<SceneManager>(() => new SceneManager());
 
         public static SceneManager Instance { get { return lazy.Value; } }
-
-        public bool DisplayBoundaries { get; set; }
 
         private SceneManager()
         {
@@ -24,7 +25,7 @@ namespace Topaz.Scene
             _worldScene = new WorldScene();
             _debugInfo = new Interface.DebugPanel(_worldScene);
 
-            DisplayBoundaries = false;
+            IsDisplayedDebug = false;
 
             Networking.Client.Instance.Initialize();
         }
@@ -44,7 +45,7 @@ namespace Topaz.Scene
                 _debugInfo.ToggleDisplay();
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F2))
-                DisplayBoundaries = !DisplayBoundaries;
+                IsDisplayedDebug = !IsDisplayedDebug;
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F8))
                 Networking.Server.Instance.ForwardPort();
@@ -56,13 +57,13 @@ namespace Topaz.Scene
             {
                 Networking.Client.Instance.Connect("127.0.0.1", 12345);
                 Engine.Content.Instance.PlaySong("Temp/song");
-            }   
+            }
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F11))
             {
                 Networking.Client.Instance.Connect("174.112.39.222", 12345);
                 Engine.Content.Instance.PlaySong("Temp/song");
-            }   
+            }
 
             if (Engine.Input.Instance.IsKeyPressed(Keys.F12))
             {

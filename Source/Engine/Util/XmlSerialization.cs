@@ -10,7 +10,7 @@ namespace Topaz.Engine.Util
             TextWriter writer = null;
             try
             {
-                var serializer = new XmlSerializer(typeof(T));
+                XmlSerializer serializer = new XmlSerializer(typeof(T));
                 writer = new StreamWriter(filePath, append);
                 serializer.Serialize(writer, objectToWrite);
             }
@@ -26,11 +26,11 @@ namespace Topaz.Engine.Util
             TextReader reader = null;
             try
             {
-                var serializer = new XmlSerializer(typeof(T));
+                XmlSerializer serializer = new XmlSerializer(typeof(T));
                 reader = new StreamReader(filePath);
                 return (T)serializer.Deserialize(reader);
             }
-            catch (System.IO.FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 return default(T);
             }

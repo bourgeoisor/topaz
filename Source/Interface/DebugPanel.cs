@@ -12,14 +12,14 @@ namespace Topaz.Interface
 
         public DebugPanel(Scene.WorldScene world)
         {
-            _relativePosition = new Vector2(5, 5);
+            RelativePosition = new Vector2(5, 5);
             _world = world;
             _text = "";
         }
 
         public void Update(GameTime gameTime)
         {
-            Rectangle viewport = Engine.Window.Instance.GetViewport().Bounds;
+            Rectangle viewport = Engine.Core.Instance.GetViewport().Bounds;
             MouseState mouse = Mouse.GetState();
             GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
 
@@ -30,7 +30,7 @@ namespace Topaz.Interface
             _text += "Input\n";
             _text += " Mouse Coords: " + mouse.Position.ToString() + "\n";
             _text += "Player\n";
-            _text += " Coordinates: " + Networking.Client.Instance.Player.GetCoordinates() + "\n";
+            _text += " Coordinates: " + Networking.Client.Instance.Player.Coordinates + "\n";
             _text += "Network\n";
             _text += " Status: " + Networking.Client.Instance.GetClientConnectionStatus() + " (" + Networking.Client.Instance.LastLatency + "ms)" + "\n";
             _text += " Last Msg: " + Networking.Client.Instance.LastNetMessage;
@@ -38,7 +38,7 @@ namespace Topaz.Interface
 
         public void Draw(GameTime gameTime)
         {
-            if (!_display) return;
+            if (!IsDisplaying) return;
 
             Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
 
