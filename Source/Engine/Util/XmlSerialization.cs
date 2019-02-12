@@ -1,12 +1,16 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
 namespace Topaz.Engine.Util
 {
     public static class XmlSerialization
     {
-        public static void WriteToXmlFile<T>(string filePath, T objectToWrite, bool append = false) where T : new()
+        public static void WriteToXmlFile<T>(string filePath, T objectToWrite, bool append = false, bool absolute = true) where T : new()
         {
+            if (absolute)
+                filePath = Path.Combine(Engine.Core.Instance.BASE_STORAGE_PATH, filePath);
+
             TextWriter writer = null;
             try
             {
@@ -21,8 +25,11 @@ namespace Topaz.Engine.Util
             }
         }
 
-        public static T ReadFromXmlFile<T>(string filePath) where T : new()
+        public static T ReadFromXmlFile<T>(string filePath, bool absolute = true) where T : new()
         {
+            if (absolute)
+                filePath = Path.Combine(Engine.Core.Instance.BASE_STORAGE_PATH, filePath);
+
             TextReader reader = null;
             try
             {
@@ -32,6 +39,11 @@ namespace Topaz.Engine.Util
             }
             catch (FileNotFoundException)
             {
+                return default(T);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 return default(T);
             }
             finally

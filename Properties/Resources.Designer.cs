@@ -61,6 +61,15 @@ namespace Topaz.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FiniksArts.
+        /// </summary>
+        internal static string Company {
+            get {
+                return ResourceManager.GetString("Company", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to true.
         /// </summary>
         internal static string DevMode {
@@ -70,7 +79,7 @@ namespace Topaz.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 29
+        ///   Looks up a localized string similar to 44
         ///.
         /// </summary>
         internal static string GitCount {
@@ -80,7 +89,7 @@ namespace Topaz.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to c3b14c57
+        ///   Looks up a localized string similar to bc02494a
         ///.
         /// </summary>
         internal static string GitHash {

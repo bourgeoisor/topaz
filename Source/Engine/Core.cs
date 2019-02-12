@@ -7,6 +7,9 @@ namespace Topaz.Engine
 {
     public sealed class Core
     {
+        private Engine.Logger _logger = new Engine.Logger("Engine");
+
+        public readonly string BASE_STORAGE_PATH;
         private const string SETTINGS_FILE_PATH = "settings.txt";
 
         public EngineState State { get; set; }
@@ -24,17 +27,29 @@ namespace Topaz.Engine
 
         private Core()
         {
+            _logger.Info("Starting...");
+            _logger.Info("Operating System: " + System.Environment.OSVersion.VersionString + " (" + System.Environment.OSVersion.Platform + ")");
             State = EngineState.Running;
 
-            Settings = Engine.Util.XmlSerialization.ReadFromXmlFile<Engine.Settings>(SETTINGS_FILE_PATH);
-            if (Settings == null)
-                Settings = new Engine.Settings();
-
-            Engine.Util.XmlSerialization.WriteToXmlFile<Engine.Settings>(SETTINGS_FILE_PATH, Settings);
+            BASE_STORAGE_PATH = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                Properties.Resources.Company,
+                Properties.Resources.Title
+            );      
         }
 
         public void Initialize(Game game, GraphicsDeviceManager graphics)
         {
+            _logger.Info("Loading settings...");
+            Settings = Engine.Util.XmlSerialization.ReadFromXmlFile<Engine.Settings>(SETTINGS_FILE_PATH);
+            if (Settings == null)
+            {
+                _logger.Info("Could not find settings, creating...");
+                Settings = new Engine.Settings();
+            }
+            Engine.Util.XmlSerialization.WriteToXmlFile<Engine.Settings>(SETTINGS_FILE_PATH, Settings);
+            _logger.Info("Settings loaded.");
+
             Game = game;
             Graphics = graphics;
             GraphicsDevice = game.GraphicsDevice;
