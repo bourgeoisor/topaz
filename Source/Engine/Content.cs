@@ -45,7 +45,7 @@ namespace Topaz.Engine
             SpriteBatch = new SpriteBatch(game.GraphicsDevice);
             ContentManager = game.Content;
 
-            SyncSettings();
+            SyncFromSettings();
         }
 
         public void LoadContent()
@@ -92,18 +92,17 @@ namespace Topaz.Engine
             SpriteBatch.DrawString(spriteFont, text, position, colorFg, 0, origin, scale, effects, layerDepth);
         }
 
-        public void SyncSettings()
+        public void SyncFromSettings()
         {
-            if (Engine.Core.Instance.Settings.Audio.Mute)
-            {
+            if (Engine.Core.Instance.Settings.Audio.MusicMute)
                 MediaPlayer.Volume = 0f;
-                SoundEffect.MasterVolume = 0f;
-            }
             else
-            {
                 MediaPlayer.Volume = 0.2f;
+
+            if (Engine.Core.Instance.Settings.Audio.SoundsMute)
+                SoundEffect.MasterVolume = 0f;
+            else
                 SoundEffect.MasterVolume = 0.2f;
-            }
         }
 
         public void PlaySong(string path)

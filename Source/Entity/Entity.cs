@@ -10,15 +10,14 @@ namespace Topaz.Entity
 
         public Engine.Logger Logger { get; set; }
 
-        public Vector2 Coordinates { get; private set; }
-        public Direction MovementDirection { get; private set; }
-
         public Texture2D Sprite { get; set; }
-
         public Rectangle SpriteBounds { get; set; }
         public Rectangle CollisionBounds { get; set; }
+
+        public Vector2 Coordinates { get; private set; }
+        public Direction MovementDirection { get; private set; }
         public int Speed { get; set; }
-        public int AnimationDirection { get; set; }
+        public int AnimationSet { get; set; }
         public float AnimationFrame { get; set; }
         public bool DrawAtOrigin { get; set; }
 
@@ -28,7 +27,7 @@ namespace Topaz.Entity
             MovementDirection = Direction.None;
             SetCoordinates(new Vector2(5, 5));
             Speed = 5;
-            AnimationDirection = 0;
+            AnimationSet = 0;
             AnimationFrame = 1;
         }
 
@@ -63,42 +62,42 @@ namespace Topaz.Entity
                 case Direction.NorthWest:
                     delta.X -= deltaMovementDiag;
                     delta.Y -= deltaMovementDiag;
-                    if (AnimationDirection != 1 && AnimationDirection != 3)
-                        AnimationDirection = 3;
+                    if (AnimationSet != 1 && AnimationSet != 3)
+                        AnimationSet = 3;
                     break;
                 case Direction.NorthEast:
                     delta.X += deltaMovementDiag;
                     delta.Y -= deltaMovementDiag;
-                    if (AnimationDirection != 2 && AnimationDirection != 3)
-                        AnimationDirection = 3;
+                    if (AnimationSet != 2 && AnimationSet != 3)
+                        AnimationSet = 3;
                     break;
                 case Direction.SouthWest:
                     delta.X -= deltaMovementDiag;
                     delta.Y += deltaMovementDiag;
-                    if (AnimationDirection != 0 && AnimationDirection != 1)
-                        AnimationDirection = 0;
+                    if (AnimationSet != 0 && AnimationSet != 1)
+                        AnimationSet = 0;
                     break;
                 case Direction.SouthEast:
                     delta.X += deltaMovementDiag;
                     delta.Y += deltaMovementDiag;
-                    if (AnimationDirection != 0 && AnimationDirection != 2)
-                        AnimationDirection = 0;
+                    if (AnimationSet != 0 && AnimationSet != 2)
+                        AnimationSet = 0;
                     break;
                 case Direction.North:
                     delta.Y -= deltaMovementAxis;
-                    AnimationDirection = 3;
+                    AnimationSet = 3;
                     break;
                 case Direction.West:
                     delta.X -= deltaMovementAxis;
-                    AnimationDirection = 1;
+                    AnimationSet = 1;
                     break;
                 case Direction.South:
                     delta.Y += deltaMovementAxis;
-                    AnimationDirection = 0;
+                    AnimationSet = 0;
                     break;
                 case Direction.East:
                     delta.X += deltaMovementAxis;
-                    AnimationDirection = 2;
+                    AnimationSet = 2;
                     break;
             }
 
@@ -115,7 +114,7 @@ namespace Topaz.Entity
                 origin.X + (Coordinates.X - Networking.Client.Instance.Player.Coordinates.X) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE),
                 origin.Y + (Coordinates.Y - Networking.Client.Instance.Player.Coordinates.Y) * (Scene.WorldScene.TILE_WIDTH * Engine.Content.DEFAULT_SCALE)
             );
-            Rectangle source = new Rectangle(step * SpriteBounds.Width, AnimationDirection * SpriteBounds.Height, SpriteBounds.Width, SpriteBounds.Height);
+            Rectangle source = new Rectangle(step * SpriteBounds.Width, AnimationSet * SpriteBounds.Height, SpriteBounds.Width, SpriteBounds.Height);
 
             if (DrawAtOrigin)
                 position = origin;

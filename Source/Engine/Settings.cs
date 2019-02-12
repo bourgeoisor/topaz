@@ -34,11 +34,17 @@ namespace Topaz.Engine
         [Serializable]
         public class AudioSettings
         {
-            public bool Mute { get; set; }
+            public bool MusicMute { get; set; }
+            public bool SoundsMute { get; set; }
+            public int MusicVolume { get; set; }
+            public int SoundsVolume { get; set; }
 
             public AudioSettings()
             {
-                Mute = false;
+                MusicMute = true;
+                SoundsMute = false;
+                MusicVolume = 100;
+                SoundsVolume = 100;
             }
         }
     }

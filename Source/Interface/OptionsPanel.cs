@@ -5,8 +5,11 @@ namespace Topaz.Interface
 {
     class OptionsPanel : Engine.Interface.Panel
     {
-        Engine.Interface.Checkbox _muteCheckbox;
-        Engine.Interface.Label _muteLabel;
+        Engine.Interface.Checkbox _musicMuteCheckbox;
+        Engine.Interface.Label _musicMuteLabel;
+
+        Engine.Interface.Checkbox _soundsMuteCheckbox;
+        Engine.Interface.Label _soundsMuteLabel;
 
         Engine.Interface.Checkbox _fullscreenCheckbox;
         Engine.Interface.Label _fullscreenLabel;
@@ -18,29 +21,47 @@ namespace Topaz.Interface
             Height = 120;
             ParentAnchor = Anchor.Center;
             Skin = Engine.Content.Instance.GetTexture("Interface/options");
-            
-            _muteCheckbox = new Engine.Interface.Checkbox(this);
-            _muteCheckbox.IsChecked = Engine.Core.Instance.Settings.Audio.Mute;
-            _muteCheckbox.RelativePosition = new Vector2(4, 4);
-            _muteCheckbox.SetOnStateChanged(delegate (bool isChecked) {
-                Engine.Core.Instance.Settings.Audio.Mute = isChecked;
-                Engine.Content.Instance.SyncSettings();
-            });
 
-            _muteLabel = new Engine.Interface.Label(this);
-            _muteLabel.RelativePosition = new Vector2(16, 4);
-            _muteLabel.SetText("Mute Audio");
+            {
+                _musicMuteCheckbox = new Engine.Interface.Checkbox(this);
+                _musicMuteCheckbox.IsChecked = Engine.Core.Instance.Settings.Audio.MusicMute;
+                _musicMuteCheckbox.RelativePosition = new Vector2(4, 4);
+                _musicMuteCheckbox.SetOnStateChanged(delegate (bool isChecked) {
+                    Engine.Core.Instance.Settings.Audio.MusicMute = isChecked;
+                    Engine.Content.Instance.SyncFromSettings();
+                });
 
-            _fullscreenCheckbox = new Engine.Interface.Checkbox(this);
-            _fullscreenCheckbox.IsChecked = Engine.Core.Instance.Settings.Video.Fullscreen;
-            _fullscreenCheckbox.RelativePosition = new Vector2(4, 16);
-            _fullscreenCheckbox.SetOnStateChanged(delegate (bool isChecked) {
-                Engine.Core.Instance.ToggleFullscreen(isChecked);
-            });
+                _musicMuteLabel = new Engine.Interface.Label(this);
+                _musicMuteLabel.RelativePosition = new Vector2(16, 4);
+                _musicMuteLabel.SetText("Mute Music");
+            }
 
-            _fullscreenLabel = new Engine.Interface.Label(this);
-            _fullscreenLabel.RelativePosition = new Vector2(16, 16);
-            _fullscreenLabel.SetText("Fullscreen");
+            {
+                _soundsMuteCheckbox = new Engine.Interface.Checkbox(this);
+                _soundsMuteCheckbox.IsChecked = Engine.Core.Instance.Settings.Audio.SoundsMute;
+                _soundsMuteCheckbox.RelativePosition = new Vector2(4, 16);
+                _soundsMuteCheckbox.SetOnStateChanged(delegate (bool isChecked) {
+                    Engine.Core.Instance.Settings.Audio.SoundsMute = isChecked;
+                    Engine.Content.Instance.SyncFromSettings();
+                });
+
+                _soundsMuteLabel = new Engine.Interface.Label(this);
+                _soundsMuteLabel.RelativePosition = new Vector2(16, 16);
+                _soundsMuteLabel.SetText("Mute Sounds");
+            }
+
+            {
+                _fullscreenCheckbox = new Engine.Interface.Checkbox(this);
+                _fullscreenCheckbox.IsChecked = Engine.Core.Instance.Settings.Video.Fullscreen;
+                _fullscreenCheckbox.RelativePosition = new Vector2(4, 28);
+                _fullscreenCheckbox.SetOnStateChanged(delegate (bool isChecked) {
+                    Engine.Core.Instance.ToggleFullscreen(isChecked);
+                });
+
+                _fullscreenLabel = new Engine.Interface.Label(this);
+                _fullscreenLabel.RelativePosition = new Vector2(16, 28);
+                _fullscreenLabel.SetText("Fullscreen");
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -48,7 +69,8 @@ namespace Topaz.Interface
             if (!IsDisplaying) return;
             if (!MouseIsIntersecting()) return;
 
-            _muteCheckbox.Update(gameTime);
+            _musicMuteCheckbox.Update(gameTime);
+            _soundsMuteCheckbox.Update(gameTime);
             _fullscreenCheckbox.Update(gameTime);
         }
 
@@ -70,8 +92,11 @@ namespace Topaz.Interface
                 0f
             );
 
-            _muteCheckbox.Draw(gameTime);
-            _muteLabel.Draw(gameTime);
+            _musicMuteCheckbox.Draw(gameTime);
+            _musicMuteLabel.Draw(gameTime);
+
+            _soundsMuteCheckbox.Draw(gameTime);
+            _soundsMuteLabel.Draw(gameTime);
 
             _fullscreenCheckbox.Draw(gameTime);
             _fullscreenLabel.Draw(gameTime);
