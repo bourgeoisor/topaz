@@ -34,7 +34,7 @@ namespace Topaz.Scene
             if (_client.Map.Layer1 == null)
                 return;
 
-            if (Engine.Input.Instance.IsKeyPressed(Keys.O))
+            if (Engine.Input.IsKeyPressed(Keys.O))
                 _optionsPanel.ToggleDisplay();
 
             if (_optionsPanel.IsDisplaying)
@@ -44,7 +44,7 @@ namespace Topaz.Scene
             }
 
             var mstate = Mouse.GetState();
-            _selectedItem = (_selectedItem + Engine.Input.Instance.GetScrollWheelDelta() + 3) % 3;
+            _selectedItem = (_selectedItem + Engine.Input.GetScrollWheelDelta() + 3) % 3;
 
             var kstate = Keyboard.GetState();
 
@@ -74,7 +74,7 @@ namespace Topaz.Scene
                 _client.SendPlayerMove();
 
             // Send map changes
-            if (Engine.Input.Instance.LeftButtonDown() || Engine.Input.Instance.RightButtonDown())
+            if (Engine.Input.LeftButtonDown() || Engine.Input.RightButtonDown())
             {
                 int tileX = (int)Math.Floor(GetMouseTileCoordinates().X);
                 int tileY = (int)Math.Floor(GetMouseTileCoordinates().Y);
@@ -83,7 +83,7 @@ namespace Topaz.Scene
                 int j = (int)Math.Floor(GetMouseTileCoordinates().Y);
 
                 int tileId = -1;
-                if (Engine.Input.Instance.LeftButtonDown())
+                if (Engine.Input.LeftButtonDown())
                 {
                     tileId = _selectedItem + 1;
                 }

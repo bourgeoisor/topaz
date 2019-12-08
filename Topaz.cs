@@ -40,7 +40,7 @@ namespace Topaz
 
             Engine.Core.Instance.Update(gameTime);
             Scene.SceneManager.Instance.Update(gameTime);
-            Engine.Input.Instance.Update(gameTime);
+            Engine.Input.Update(gameTime);
 
             base.Update(gameTime);
         }

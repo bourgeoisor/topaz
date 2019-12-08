@@ -45,7 +45,7 @@ namespace Topaz.Engine.Interface
 
             if (MouseIsIntersecting())
             {
-                if (Engine.Input.Instance.LeftButtonPressed())
+                if (Engine.Input.LeftButtonPressed())
                 {
                     IsChecked = !IsChecked;
 

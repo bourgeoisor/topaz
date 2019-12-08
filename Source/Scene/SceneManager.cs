@@ -41,31 +41,31 @@ namespace Topaz.Scene
 
         public void Update(GameTime gameTime)
         {
-            if (Engine.Input.Instance.IsKeyPressed(Keys.F1))
+            if (Engine.Input.IsKeyPressed(Keys.F1))
                 _debugInfo.ToggleDisplay();
 
-            if (Engine.Input.Instance.IsKeyPressed(Keys.F2))
+            if (Engine.Input.IsKeyPressed(Keys.F2))
                 IsDisplayedDebug = !IsDisplayedDebug;
 
-            if (Engine.Input.Instance.IsKeyPressed(Keys.F8))
+            if (Engine.Input.IsKeyPressed(Keys.F8))
                 Networking.Server.Instance.ForwardPort();
 
-            if (Engine.Input.Instance.IsKeyPressed(Keys.F9))
+            if (Engine.Input.IsKeyPressed(Keys.F9))
                 Networking.Server.Instance.Initialize();
 
-            if (Engine.Input.Instance.IsKeyPressed(Keys.F10))
+            if (Engine.Input.IsKeyPressed(Keys.F10))
             {
                 Networking.Client.Instance.Connect("127.0.0.1", 12345);
                 Engine.Content.Instance.PlaySong("Temp/song");
             }
 
-            if (Engine.Input.Instance.IsKeyPressed(Keys.F11))
+            if (Engine.Input.IsKeyPressed(Keys.F11))
             {
                 Networking.Client.Instance.Connect("174.112.39.222", 12345);
                 Engine.Content.Instance.PlaySong("Temp/song");
             }
 
-            if (Engine.Input.Instance.IsKeyPressed(Keys.F12))
+            if (Engine.Input.IsKeyPressed(Keys.F12))
             {
                 Networking.Client.Instance.Disconnect();
                 Networking.Server.Instance.Terminate();
