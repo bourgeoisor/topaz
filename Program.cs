@@ -18,7 +18,6 @@ namespace Topaz
                 }
                 catch (Exception e)
                 {
-                    Engine.Window.Instance.Terminate();
                     System.Windows.Forms.MessageBox.Show(e.ToString(), "Runtime Error");
                 }
             #endif

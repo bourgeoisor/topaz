@@ -13,8 +13,8 @@ namespace Topaz.Engine
         private const string SETTINGS_FILE_PATH = "settings.txt";
 
         public EngineState State { get; set; }
-        public Settings Settings { get; set; }
         public Game Game { get; set; }
+        public Settings Settings { get; set; }
         public GraphicsDeviceManager Graphics { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }
 
@@ -35,7 +35,7 @@ namespace Topaz.Engine
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 Properties.Resources.Company,
                 Properties.Resources.Title
-            );      
+            );
         }
 
         public void Initialize(Game game, GraphicsDeviceManager graphics)
@@ -61,7 +61,7 @@ namespace Topaz.Engine
             Game.Window.Title = title;
             Game.Window.AllowUserResizing = true;
             Game.IsMouseVisible = true;
-            Game.IsFixedTimeStep = Settings.Video.Vsync;
+            Game.IsFixedTimeStep = false;
             Graphics.SynchronizeWithVerticalRetrace = Settings.Video.Vsync;
 
             ToggleFullscreen(Settings.Video.Fullscreen);
@@ -81,10 +81,10 @@ namespace Topaz.Engine
 
         public void Update(GameTime gameTime)
         {
-            if (Engine.Input.Instance.IsKeyDown(Keys.Escape))
+            if (Engine.Input.IsKeyDown(Keys.Escape))
                 State = EngineState.Terminating;
 
-            if (Engine.Input.Instance.IsKeyDown(Keys.LeftControl) && Engine.Input.Instance.IsKeyDown(Keys.Enter))
+            if (Engine.Input.IsKeyDown(Keys.LeftControl) && Engine.Input.IsKeyDown(Keys.Enter))
                 ToggleFullscreen(!Graphics.IsFullScreen);
         }
 
