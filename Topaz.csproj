@@ -49,15 +49,18 @@
     </Compile>
     <Compile Include="Source\Engine\Content.cs" />
     <Compile Include="Source\Engine\Input.cs" />
+    <Compile Include="Source\Engine\Interface\Button.cs" />
     <Compile Include="Source\Engine\Interface\Checkbox.cs" />
     <Compile Include="Source\Engine\Interface\Label.cs" />
     <Compile Include="Source\Engine\Interface\Widget.cs" />
     <Compile Include="Source\Engine\Logger.cs" />
     <Compile Include="Source\Engine\Settings.cs" />
     <Compile Include="Source\Engine\Util\BinarySerialization.cs" />
+    <Compile Include="Source\Engine\Util\PerlinNoise.cs" />
     <Compile Include="Source\Engine\Util\XmlSerialization.cs" />
     <Compile Include="Source\Engine\Core.cs" />
     <Compile Include="Source\Interface\DebugPanel.cs" />
+    <Compile Include="Source\Interface\DevChunkGenerate.cs" />
     <Compile Include="Source\Interface\OptionsPanel.cs" />
     <Compile Include="Source\Engine\Interface\Panel.cs" />
     <Compile Include="Source\Entity\Entity.cs" />
@@ -66,6 +69,7 @@
     <Compile Include="Source\Networking\ServerConnection.cs" />
     <Compile Include="Source\Networking\MessageType.cs" />
     <Compile Include="Source\Networking\Server.cs" />
+    <Compile Include="Source\Scene\DevChunkGenerationScene.cs" />
     <Compile Include="Source\Scene\SceneManager.cs" />
     <Compile Include="Source\Scene\WorldScene.cs" />
     <Compile Include="Source\World\Chunk.cs" />

@@ -10,7 +10,7 @@ namespace Topaz.Engine
         private Engine.Logger _logger = new Engine.Logger("Engine");
 
         public readonly string BASE_STORAGE_PATH;
-        private const string SETTINGS_FILE_PATH = "settings.txt";
+        private const string SETTINGS_FILE_PATH = "settings.xml";
 
         public EngineState State { get; set; }
         public Game Game { get; set; }

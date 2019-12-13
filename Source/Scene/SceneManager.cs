@@ -8,6 +8,7 @@ namespace Topaz.Scene
     {
         private Interface.DebugPanel _debugInfo;
         private WorldScene _worldScene;
+        private DevChunkGenerationScene _devChunkGenerationScene;
 
         public bool IsDisplayedDebug { get; set; }
 
@@ -23,6 +24,7 @@ namespace Topaz.Scene
         public void Initialize()
         {
             _worldScene = new WorldScene();
+            _devChunkGenerationScene = new DevChunkGenerationScene();
             _debugInfo = new Interface.DebugPanel(_worldScene);
 
             IsDisplayedDebug = false;
@@ -33,6 +35,7 @@ namespace Topaz.Scene
         public void LoadContent()
         {
             _worldScene.LoadContent();
+            _devChunkGenerationScene.LoadContent();
         }
 
         public void UnloadContent()
@@ -73,13 +76,15 @@ namespace Topaz.Scene
 
             Networking.Client.Instance.HandleMessages();
 
-            _worldScene.Update(gameTime);
+            //_worldScene.Update(gameTime);
+            _devChunkGenerationScene.Update(gameTime);
             _debugInfo.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-            _worldScene.Draw(gameTime);
+            //_worldScene.Draw(gameTime);
+            _devChunkGenerationScene.Draw(gameTime);
             _debugInfo.Draw(gameTime);
         }
     }

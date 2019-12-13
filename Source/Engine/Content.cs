@@ -12,6 +12,7 @@ namespace Topaz.Engine
     public sealed class Content
     {
         public const float DEFAULT_SCALE = 3f;
+        public const float DEFAULT_FONT_SCALE = 2f;
 
         public ContentManager ContentManager { get; private set; }
         public GraphicsDeviceManager Graphics { get; private set; }
@@ -50,8 +51,8 @@ namespace Topaz.Engine
 
         public void LoadContent()
         {
-            Font = ContentManager.Load<SpriteFont>("Font/TypeWriter8");
-
+            Font = ContentManager.Load<SpriteFont>("Font/FreePixel");
+            
             BlackPixel = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             BlackPixel.SetData<Color>(new Color[] { Color.Black });
 
@@ -76,7 +77,7 @@ namespace Topaz.Engine
             return _loadedTextures[path];
         }
 
-        public void DrawStringOutline(SpriteFont spriteFont, string text, Vector2 position, Color colorBg, Color colorFg, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
+        public void DrawStringOutline(SpriteFont spriteFont, string text, Vector2 position, Color colorBg, Color colorFg, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
         {
             text = Regex.Replace(text, @"[^(\u000a)(\u0020-\u007F)]+", string.Empty);
 

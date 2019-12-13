@@ -48,9 +48,8 @@ namespace Topaz.Interface
                 AbsolutePosition(),
                 Color.Black,
                 Color.White,
-                0,
                 OriginPoint(),
-                Engine.Content.DEFAULT_SCALE,
+                1f,
                 SpriteEffects.None,
                 0.5f
             );
