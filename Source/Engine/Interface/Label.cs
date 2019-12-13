@@ -25,7 +25,7 @@ namespace Topaz.Engine.Interface
                 new Color(135, 90, 12),
                 0,
                 OriginPoint(),
-                Engine.Content.DEFAULT_SCALE,
+                Engine.Content.DEFAULT_FONT_SCALE,
                 SpriteEffects.None,
                 0f
             );

@@ -13,6 +13,20 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Font/FreePixel.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Font/FreePixel.spritefont
+
+#begin Font/PixelFJVerdana12pt.spritefont
+/importer:FontDescriptionImporter
+/processor:LocalizedFontProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Font/PixelFJVerdana12pt.spritefont
+
 #begin Font/TypeWriter8.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -34,6 +48,18 @@
 /processorParam:TextureFormat=Compressed
 /build:Font/VeraMono14.spritefont
 
+#begin Interface/button.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Interface/button.png
+
 #begin Interface/checkbox.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -45,6 +71,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Interface/checkbox.png
+
+#begin Interface/generate.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Interface/generate.png
 
 #begin Interface/options.png
 /importer:TextureImporter
@@ -93,6 +131,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Temp/tileset.png
+
+#begin Temp/tileset2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Temp/tileset2.png
 
 #begin Temp/winter.png
 /importer:TextureImporter
