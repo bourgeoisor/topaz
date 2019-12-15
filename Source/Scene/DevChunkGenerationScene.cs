@@ -5,9 +5,11 @@ using System;
 
 namespace Topaz.Scene
 {
-    class DevChunkGenerationScene : Scene
+    class DevChunkGenerationScene : IScene
     {
         public const int TILE_WIDTH = 4;
+
+        public Engine.Core Core = Engine.Core.Instance;
 
         float[][] mapgen;
         private Texture2D _tileset;
@@ -33,7 +35,7 @@ namespace Topaz.Scene
             RegenerateMap();
 
             _devChunkGenerate = new Interface.DevChunkGenerate(this);
-            _devChunkGenerate.IsDisplaying = true;
+            _devChunkGenerate.Visible = true;
         }
 
         public void Update()
@@ -83,7 +85,9 @@ namespace Topaz.Scene
 
             spriteBatch.End();
 
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
             _devChunkGenerate.Draw();
+            spriteBatch.End();
         }
 
         public void DrawTile(int tile, Vector2 position)

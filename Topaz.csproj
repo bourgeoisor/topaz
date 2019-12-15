@@ -48,6 +48,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Source\Engine\Content.cs" />
+    <Compile Include="Source\Engine\IGameObject.cs" />
     <Compile Include="Source\Engine\Input.cs" />
     <Compile Include="Source\Engine\Interface\Button.cs" />
     <Compile Include="Source\Engine\Interface\Checkbox.cs" />
@@ -71,12 +72,11 @@
     <Compile Include="Source\Networking\MessageType.cs" />
     <Compile Include="Source\Networking\Server.cs" />
     <Compile Include="Source\Scene\DevChunkGenerationScene.cs" />
-    <Compile Include="Source\Scene\Scene.cs" />
+    <Compile Include="Source\Scene\IScene.cs" />
     <Compile Include="Source\Scene\SceneManager.cs" />
     <Compile Include="Source\Scene\WorldScene.cs" />
     <Compile Include="Source\World\Chunk.cs" />
     <Compile Include="Topaz.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

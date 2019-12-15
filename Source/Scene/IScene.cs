@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Topaz.Scene
 {
-    class Scene
+    interface IScene
     {
-        public Engine.Core Core = Engine.Core.Instance;
     }
 }

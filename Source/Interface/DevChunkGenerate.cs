@@ -7,10 +7,7 @@ namespace Topaz.Interface
     {
         Scene.DevChunkGenerationScene _scene;
 
-        Engine.Interface.Button _generateButton;
-        Engine.Interface.Label _generateLabel;
-
-        Engine.Interface.Label _octaveLabel;
+        Engine.Interface.Label _infoLabel;
 
         public DevChunkGenerate(Scene.DevChunkGenerationScene scene) : base()
         {
@@ -22,34 +19,22 @@ namespace Topaz.Interface
             ParentAnchor = Anchor.TopRight;
             Skin = Engine.Content.Instance.GetTexture("Interface/generate");
 
-            _generateButton = new Engine.Interface.Button(this);
-            _generateButton.RelativePosition = new Vector2(5, 5);
-            _generateButton.SetOnClicked(delegate
-            {
-                _scene.RegenerateMap();
-            });
-
-            _generateLabel = new Engine.Interface.Label(this);
-            _generateLabel.RelativePosition = new Vector2(11, 6);
-            _generateLabel.SetText("Generate");
-
-            _octaveLabel = new Engine.Interface.Label(this);
-            _octaveLabel.RelativePosition = new Vector2(6, 17);
-            _octaveLabel.SetText("Octave: ");
+            _infoLabel = new Engine.Interface.Label(this);
+            _infoLabel.RelativePosition = new Vector2(5, 5);
+            _infoLabel.SetText("Data N/A");
+            Children.Add(_infoLabel);
         }
 
-        public void Update()
+        public override void Update()
         {
-            _generateButton.Update();
+            _infoLabel.SetText("Perlin Noise\nSeed: " + _scene.Seed + "\nOctave: " + _scene.Octave + "\nPersistence: " + _scene.Persistence);
 
-            _octaveLabel.SetText("Seed: " + _scene.Seed + "\nOctave: " + _scene.Octave + "\nPersistence: " + _scene.Persistence);
+            base.Update();
         }
 
-        public void Draw()
+        public override void Draw()
         {
-            if (!IsDisplaying) return;
-
-            Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
+            if (!Visible) return;
 
             Engine.Content.Instance.SpriteBatch.Draw(
                 Skin,
@@ -63,11 +48,7 @@ namespace Topaz.Interface
                 0f
             );
 
-            _generateButton.Draw();
-            _generateLabel.Draw();
-            _octaveLabel.Draw();
-
-            Engine.Content.Instance.SpriteBatch.End();
+            base.Draw();
         }
     }
 }

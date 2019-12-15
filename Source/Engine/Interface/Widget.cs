@@ -1,14 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Topaz.Engine.Interface
 {
-    abstract class Widget
+    abstract class Widget : IGameObject
     {
         public Engine.Core Core = Engine.Core.Instance;
 
         public Widget Parent { get; protected set; }
+        public List<Widget> Children { get; private set; }
         public Texture2D Skin { get; protected set; }
 
         public Vector2 RelativePosition { get; set; }
@@ -18,16 +20,33 @@ namespace Topaz.Engine.Interface
         public Anchor ParentAnchor { get; protected set; }
         public Anchor AlignmentAnchor { get; protected set; }
 
-        public bool IsDisplaying { get; set; }
+        public bool Visible { get; set; }
 
         public enum Anchor { TopLeft, TopRight, BottomLeft, BottomRight, Center }
 
         public Widget()
         {
+            Children = new List<Widget>();
             RelativePosition = new Vector2(0, 0);
             ParentAnchor = Anchor.TopLeft;
             AlignmentAnchor = Anchor.TopLeft;
-            IsDisplaying = true;
+            Visible = true;
+        }
+
+        public virtual void Update()
+        {
+            foreach (Widget widget in Children)
+            {
+                widget.Update();
+            }
+        }
+
+        public virtual void Draw()
+        {
+            foreach (Widget widget in Children)
+            {
+                widget.Draw();
+            }
         }
 
         public bool MouseIsIntersecting()
@@ -116,7 +135,7 @@ namespace Topaz.Engine.Interface
 
         public void ToggleDisplay()
         {
-            IsDisplaying = !IsDisplaying;
+            Visible = !Visible;
         }
     }
 }

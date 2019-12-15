@@ -4,7 +4,7 @@
     {
         public Panel() : base()
         {
-            IsDisplaying = false;
+            Visible = false;
         }
     }
 }

@@ -12,11 +12,11 @@ namespace Topaz.Engine.Interface
             Parent = parent;
         }
 
-        public void Update()
+        public override void Update()
         {
         }
 
-        public void Draw()
+        public override void Draw()
         {
             Engine.Content.Instance.SpriteBatch.DrawString(
                 Content.Instance.Font,

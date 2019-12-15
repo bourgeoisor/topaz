@@ -1,66 +1,26 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 
 namespace Topaz
 {
-    public class Topaz : Game
+    public static class Topaz
     {
-        private readonly GraphicsDeviceManager _graphics;
-
-        public Topaz()
+        [STAThread]
+        static void Main()
         {
-            _graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-        }
-
-        protected override void Initialize()
-        {
-            Engine.Core.Instance.Initialize(this, _graphics);
-            Scene.SceneManager.Instance.Initialize();
-
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            Engine.Core.Instance.LoadContent();
-            Scene.SceneManager.Instance.LoadContent();
-        }
-
-        protected override void UnloadContent()
-        {
-            Engine.Core.Instance.UnloadContent();
-            Scene.SceneManager.Instance.UnloadContent();
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            if (Engine.Core.Instance.State == Engine.Core.EngineState.Terminating)
-                Exit();
-
-            Scene.SceneManager.Instance.Update();
-            Engine.Core.Instance.Update(gameTime);
-
-            base.Update(gameTime);
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            Engine.Core.Instance.Draw();
-            Scene.SceneManager.Instance.Draw();
-
-            base.Draw(gameTime);
-        }
-
-        protected override void OnExiting(object sender, EventArgs args)
-        {
-            Engine.Core.Instance.State = Engine.Core.EngineState.Terminating;
-            Engine.Core.Instance.SaveSettings();
-
-            Networking.Client.Instance.Disconnect();
-            Networking.Server.Instance.Terminate();
-
-            base.OnExiting(sender, args);
+            #if DEBUG
+                using (var topaz = Engine.Core.Instance)
+                    topaz.Run();
+            #else
+                try
+                {
+                    using (var topaz = Engine.Core.Instance)
+                        topaz.Run();
+                }
+                catch (Exception e)
+                {
+                    System.Windows.Forms.MessageBox.Show(e.ToString(), "Runtime Error");
+                }
+            #endif
         }
     }
 }

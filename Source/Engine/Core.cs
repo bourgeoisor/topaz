@@ -5,22 +5,20 @@ using System;
 
 namespace Topaz.Engine
 {
-    public sealed class Core
+    public sealed class Core : Game
     {
-        private Engine.Logger _logger = new Engine.Logger("Engine");
+        private Logger _logger = new Logger("Engine");
 
         public readonly string BASE_STORAGE_PATH;
         private const string SETTINGS_FILE_PATH = "settings.xml";
 
         public EngineState State { get; set; }
-        public Game Game { get; set; }
+        public enum EngineState { Running, Terminating }
+
         public Settings Settings { get; set; }
         public GraphicsDeviceManager Graphics { get; private set; }
-        public GraphicsDevice GraphicsDevice { get; private set; }
         public Time Time { get; private set; }
         public Input Input { get; private set; }
-
-        public enum EngineState { Running, Terminating }
 
         private static readonly Lazy<Core> lazy =
             new Lazy<Core>(() => new Core());
@@ -38,9 +36,12 @@ namespace Topaz.Engine
                 Properties.Resources.Company,
                 Properties.Resources.Title
             );
+
+            Graphics = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";
         }
 
-        public void Initialize(Game game, GraphicsDeviceManager graphics)
+        protected override void Initialize()
         {
             _logger.Info("Loading settings...");
             Settings = Engine.Util.XmlSerialization.ReadFromXmlFile<Engine.Settings>(SETTINGS_FILE_PATH);
@@ -49,21 +50,17 @@ namespace Topaz.Engine
                 _logger.Info("Could not find settings, creating...");
                 Settings = new Engine.Settings();
             }
-            Engine.Util.XmlSerialization.WriteToXmlFile<Engine.Settings>(SETTINGS_FILE_PATH, Settings);
+            Util.XmlSerialization.WriteToXmlFile<Engine.Settings>(SETTINGS_FILE_PATH, Settings);
             _logger.Info("Settings loaded.");
-
-            Game = game;
-            Graphics = graphics;
-            GraphicsDevice = game.GraphicsDevice;
 
             string title = Properties.Resources.Title;
             if (Properties.Resources.DevMode == "true")
                 title += " " + Properties.Resources.Version + "-" + Properties.Resources.GitCount + "-" + Properties.Resources.GitHash;
 
-            Game.Window.Title = title;
-            Game.Window.AllowUserResizing = true;
-            Game.IsMouseVisible = true;
-            Game.IsFixedTimeStep = false;
+            Window.Title = title;
+            Window.AllowUserResizing = true;
+            IsMouseVisible = true;
+            IsFixedTimeStep = false;
             Graphics.SynchronizeWithVerticalRetrace = Settings.Video.Vsync;
 
             Time = new Time();
@@ -71,21 +68,29 @@ namespace Topaz.Engine
 
             ToggleFullscreen(Settings.Video.Fullscreen);
 
-            Engine.Content.Instance.Initialize(game, graphics);
+            Engine.Content.Instance.Initialize(this, Graphics);
+            Scene.SceneManager.Instance.Initialize();
+
+            base.Initialize();
         }
 
-        public void LoadContent()
+        protected override void LoadContent()
         {
             Engine.Content.Instance.LoadContent();
+            Scene.SceneManager.Instance.LoadContent();
         }
 
-        public void UnloadContent()
+        protected override void UnloadContent()
         {
             Engine.Content.Instance.UnloadContent();
+            Scene.SceneManager.Instance.UnloadContent();
         }
 
-        public void Update(GameTime gameTime)
+        protected override void Update(GameTime gameTime)
         {
+            if (State == EngineState.Terminating)
+                Exit();
+
             Time.Update(gameTime);
 
             if (Input.IsKeyDown(Keys.Escape))
@@ -94,12 +99,30 @@ namespace Topaz.Engine
             if (Input.IsKeyDown(Keys.LeftControl) && Input.IsKeyDown(Keys.Enter))
                 ToggleFullscreen(!Graphics.IsFullScreen);
 
+            Scene.SceneManager.Instance.Update();
+
             Input.Update();
+
+            base.Update(gameTime);
         }
 
-        public void Draw()
+        protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            Scene.SceneManager.Instance.Draw();
+
+            base.Draw(gameTime);
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            State = EngineState.Terminating;
+            SaveSettings();
+
+            Networking.Client.Instance.Disconnect();
+            Networking.Server.Instance.Terminate();
+
+            base.OnExiting(sender, args);
         }
 
         public void SaveSettings()

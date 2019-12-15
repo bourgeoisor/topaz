@@ -27,9 +27,9 @@ namespace Topaz.Engine.Interface
             OnClicked = callback;
         }
 
-        public void Update()
+        public override void Update()
         {
-            if (!IsDisplaying) return;
+            if (!Visible) return;
 
             if (MouseIsIntersecting())
             {
@@ -41,6 +41,7 @@ namespace Topaz.Engine.Interface
                 {
                     if (IsPressed)
                     {
+                        Console.WriteLine("yay!");
                         OnClicked?.Invoke();
                     }
 
@@ -51,9 +52,9 @@ namespace Topaz.Engine.Interface
             IsHovered = MouseIsIntersecting();
         }
 
-        public void Draw()
+        public override void Draw()
         {
-            if (!IsDisplaying) return;
+            if (!Visible) return;
 
             int sprite = 0;
             if (IsHovered && !IsPressed) sprite = 1;

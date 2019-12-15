@@ -17,7 +17,7 @@ namespace Topaz.Interface
             _text = "";
         }
 
-        public void Update()
+        public override void Update()
         {
             Rectangle viewport = Core.GetViewport().Bounds;
             MouseState mouse = Mouse.GetState();
@@ -33,9 +33,9 @@ namespace Topaz.Interface
             _text += "Last Msg: " + Networking.Client.Instance.LastNetMessage;
         }
 
-        public void Draw()
+        public override void Draw()
         {
-            if (!IsDisplaying) return;
+            if (!Visible) return;
 
             Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
 

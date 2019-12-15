@@ -6,9 +6,11 @@ using System.Collections.Generic;
 
 namespace Topaz.Scene
 {
-    class WorldScene : Scene
+    class WorldScene : IScene
     {
         public const int TILE_WIDTH = 16;
+
+        public Engine.Core Core = Engine.Core.Instance;
 
         private Texture2D _tileset;
         private Networking.Client _client;
@@ -37,7 +39,7 @@ namespace Topaz.Scene
             if (Core.Input.IsKeyPressed(Keys.O))
                 _optionsPanel.ToggleDisplay();
 
-            if (_optionsPanel.IsDisplaying)
+            if (_optionsPanel.Visible)
             {
                 _optionsPanel.Update();
                 if (_optionsPanel.MouseIsIntersecting()) return;
@@ -166,7 +168,9 @@ namespace Topaz.Scene
             Engine.Content.Instance.SpriteBatch.End();
 
             // Draw panels
+            Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
             _optionsPanel.Draw();
+            Engine.Content.Instance.SpriteBatch.End();
         }
 
         public void DrawTile(int tile, Vector2 position)

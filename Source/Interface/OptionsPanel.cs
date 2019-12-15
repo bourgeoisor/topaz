@@ -64,19 +64,17 @@ namespace Topaz.Interface
             }
         }
 
-        public void Update()
+        public override void Update()
         {
-            if (!IsDisplaying) return;
+            if (!Visible) return;
             if (!MouseIsIntersecting()) return;
 
-            _musicMuteCheckbox.Update();
-            _soundsMuteCheckbox.Update();
-            _fullscreenCheckbox.Update();
+            base.Update();
         }
 
-        public void Draw()
+        public override void Draw()
         {
-            if (!IsDisplaying) return;
+            if (!Visible) return;
 
             Engine.Content.Instance.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, null);
 
@@ -92,16 +90,7 @@ namespace Topaz.Interface
                 0f
             );
 
-            _musicMuteCheckbox.Draw();
-            _musicMuteLabel.Draw();
-
-            _soundsMuteCheckbox.Draw();
-            _soundsMuteLabel.Draw();
-
-            _fullscreenCheckbox.Draw();
-            _fullscreenLabel.Draw();
-
-            Engine.Content.Instance.SpriteBatch.End();
+            base.Draw();
         }
     }
 }
