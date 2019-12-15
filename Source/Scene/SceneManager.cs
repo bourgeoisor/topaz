@@ -10,6 +10,8 @@ namespace Topaz.Scene
         private WorldScene _worldScene;
         private DevChunkGenerationScene _devChunkGenerationScene;
 
+        public Engine.Core Core = Engine.Core.Instance;
+
         public bool IsDisplayedDebug { get; set; }
 
         private static readonly Lazy<SceneManager> lazy =
@@ -42,33 +44,33 @@ namespace Topaz.Scene
         {
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            if (Engine.Input.IsKeyPressed(Keys.F1))
+            if (Core.Input.IsKeyPressed(Keys.F1))
                 _debugInfo.ToggleDisplay();
 
-            if (Engine.Input.IsKeyPressed(Keys.F2))
+            if (Core.Input.IsKeyPressed(Keys.F2))
                 IsDisplayedDebug = !IsDisplayedDebug;
 
-            if (Engine.Input.IsKeyPressed(Keys.F8))
+            if (Core.Input.IsKeyPressed(Keys.F8))
                 Networking.Server.Instance.ForwardPort();
 
-            if (Engine.Input.IsKeyPressed(Keys.F9))
+            if (Core.Input.IsKeyPressed(Keys.F9))
                 Networking.Server.Instance.Initialize();
 
-            if (Engine.Input.IsKeyPressed(Keys.F10))
+            if (Core.Input.IsKeyPressed(Keys.F10))
             {
                 Networking.Client.Instance.Connect("127.0.0.1", 12345);
                 Engine.Content.Instance.PlaySong("Temp/song");
             }
 
-            if (Engine.Input.IsKeyPressed(Keys.F11))
+            if (Core.Input.IsKeyPressed(Keys.F11))
             {
                 Networking.Client.Instance.Connect("174.112.39.222", 12345);
                 Engine.Content.Instance.PlaySong("Temp/song");
             }
 
-            if (Engine.Input.IsKeyPressed(Keys.F12))
+            if (Core.Input.IsKeyPressed(Keys.F12))
             {
                 Networking.Client.Instance.Disconnect();
                 Networking.Server.Instance.Terminate();
@@ -77,15 +79,15 @@ namespace Topaz.Scene
             Networking.Client.Instance.HandleMessages();
 
             //_worldScene.Update(gameTime);
-            _devChunkGenerationScene.Update(gameTime);
-            _debugInfo.Update(gameTime);
+            _devChunkGenerationScene.Update();
+            _debugInfo.Update();
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             //_worldScene.Draw(gameTime);
-            _devChunkGenerationScene.Draw(gameTime);
-            _debugInfo.Draw(gameTime);
+            _devChunkGenerationScene.Draw();
+            _debugInfo.Draw();
         }
     }
 }

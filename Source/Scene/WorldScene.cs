@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Topaz.Scene
 {
-    class WorldScene
+    class WorldScene : Scene
     {
         public const int TILE_WIDTH = 16;
 
@@ -29,22 +29,22 @@ namespace Topaz.Scene
             _optionsPanel = new Interface.OptionsPanel();
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             if (_client.Map.Layer1 == null)
                 return;
 
-            if (Engine.Input.IsKeyPressed(Keys.O))
+            if (Core.Input.IsKeyPressed(Keys.O))
                 _optionsPanel.ToggleDisplay();
 
             if (_optionsPanel.IsDisplaying)
             {
-                _optionsPanel.Update(gameTime);
+                _optionsPanel.Update();
                 if (_optionsPanel.MouseIsIntersecting()) return;
             }
 
             var mstate = Mouse.GetState();
-            _selectedItem = (_selectedItem + Engine.Input.GetScrollWheelDelta() + 3) % 3;
+            _selectedItem = (_selectedItem + Core.Input.GetScrollWheelDelta() + 3) % 3;
 
             var kstate = Keyboard.GetState();
 
@@ -74,7 +74,7 @@ namespace Topaz.Scene
                 _client.SendPlayerMove();
 
             // Send map changes
-            if (Engine.Input.LeftButtonDown() || Engine.Input.RightButtonDown())
+            if (Core.Input.LeftButtonDown() || Core.Input.RightButtonDown())
             {
                 int tileX = (int)Math.Floor(GetMouseTileCoordinates().X);
                 int tileY = (int)Math.Floor(GetMouseTileCoordinates().Y);
@@ -83,7 +83,7 @@ namespace Topaz.Scene
                 int j = (int)Math.Floor(GetMouseTileCoordinates().Y);
 
                 int tileId = -1;
-                if (Engine.Input.LeftButtonDown())
+                if (Core.Input.LeftButtonDown())
                 {
                     tileId = _selectedItem + 1;
                 }
@@ -101,10 +101,10 @@ namespace Topaz.Scene
 
             // Update each players
             foreach (Entity.Player player in _client.Players.Values)
-                player.Update(gameTime);
+                player.Update();
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             if (_client.Map.Layer1 == null)
                 return;
@@ -158,7 +158,7 @@ namespace Topaz.Scene
             List<Entity.Player> players = new List<Entity.Player>(_client.Players.Values);
             players.Sort((a, b) => a.Coordinates.Y.CompareTo(b.Coordinates.Y));
             foreach (Entity.Player player in players)
-                player.Draw(gameTime);
+                player.Draw();
 
             // Draw item selection
             DrawTile(_selectedItem + 1, new Vector2(10, Engine.Core.Instance.GetViewport().Height - 74));
@@ -166,7 +166,7 @@ namespace Topaz.Scene
             Engine.Content.Instance.SpriteBatch.End();
 
             // Draw panels
-            _optionsPanel.Draw(gameTime);
+            _optionsPanel.Draw();
         }
 
         public void DrawTile(int tile, Vector2 position)

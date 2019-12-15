@@ -17,26 +17,23 @@ namespace Topaz.Interface
             _text = "";
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            Rectangle viewport = Engine.Core.Instance.GetViewport().Bounds;
+            Rectangle viewport = Core.GetViewport().Bounds;
             MouseState mouse = Mouse.GetState();
             GamePadState gamePad = GamePad.GetState(PlayerIndex.One);
 
-            double fps = Math.Round(1 / gameTime.ElapsedGameTime.TotalSeconds);
-
-            _text = "Video\n";
-            _text += " " + fps + "fps (" + viewport.Width + "x" + viewport.Height + ")\n";
-            _text += "Input\n";
-            _text += " Mouse Coords: " + mouse.Position.ToString() + "\n";
-            _text += "Player\n";
-            _text += " Coordinates: " + Networking.Client.Instance.Player.Coordinates + "\n";
-            _text += "Network\n";
-            _text += " Status: " + Networking.Client.Instance.GetClientConnectionStatus() + " (" + Networking.Client.Instance.LastLatency + "ms)" + "\n";
-            _text += " Last Msg: " + Networking.Client.Instance.LastNetMessage;
+            _text = "FPS: " + Core.Time.FramesPerSecond + "\n";
+            _text += "Display: " + viewport.Width + "x" + viewport.Height + "\n";
+            _text += "Memory: " + Math.Round((GC.GetTotalMemory(false) / 1024f) / 1024f, 2) + "MiB\n";
+            _text += "Mouse Coords: " + mouse.Position.ToString() + "\n";
+            _text += "Coordinates: " + Networking.Client.Instance.Player.Coordinates + "\n";
+            _text += "\n";
+            _text += "Status: " + Networking.Client.Instance.GetClientConnectionStatus() + " (" + Networking.Client.Instance.LastLatency + "ms)" + "\n";
+            _text += "Last Msg: " + Networking.Client.Instance.LastNetMessage;
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             if (!IsDisplaying) return;
 

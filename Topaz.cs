@@ -38,17 +38,16 @@ namespace Topaz
             if (Engine.Core.Instance.State == Engine.Core.EngineState.Terminating)
                 Exit();
 
+            Scene.SceneManager.Instance.Update();
             Engine.Core.Instance.Update(gameTime);
-            Scene.SceneManager.Instance.Update(gameTime);
-            Engine.Input.Update(gameTime);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            Engine.Core.Instance.Draw(gameTime);
-            Scene.SceneManager.Instance.Draw(gameTime);
+            Engine.Core.Instance.Draw();
+            Scene.SceneManager.Instance.Draw();
 
             base.Draw(gameTime);
         }

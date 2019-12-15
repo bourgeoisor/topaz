@@ -6,6 +6,8 @@ namespace Topaz.Engine.Interface
 {
     abstract class Widget
     {
+        public Engine.Core Core = Engine.Core.Instance;
+
         public Widget Parent { get; protected set; }
         public Texture2D Skin { get; protected set; }
 

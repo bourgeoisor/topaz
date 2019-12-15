@@ -5,7 +5,7 @@ using System;
 
 namespace Topaz.Scene
 {
-    class DevChunkGenerationScene
+    class DevChunkGenerationScene : Scene
     {
         public const int TILE_WIDTH = 4;
 
@@ -36,38 +36,38 @@ namespace Topaz.Scene
             _devChunkGenerate.IsDisplaying = true;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            if (Engine.Input.IsKeyPressed(Keys.P))
+            if (Core.Input.IsKeyPressed(Keys.P))
             {
                 Seed = random.Next(0, 10000000);
                 RegenerateMap();
             }
-            if (Engine.Input.IsKeyPressed(Keys.Q))
+            if (Core.Input.IsKeyPressed(Keys.Q))
             {
                 Octave--;
                 RegenerateMap();
             }
-            if (Engine.Input.IsKeyPressed(Keys.W))
+            if (Core.Input.IsKeyPressed(Keys.W))
             {
                 Octave++;
                 RegenerateMap();
             }
-            if (Engine.Input.IsKeyPressed(Keys.A))
+            if (Core.Input.IsKeyPressed(Keys.A))
             {
                 Persistence -= 0.1f;
                 RegenerateMap();
             }
-            if (Engine.Input.IsKeyPressed(Keys.S))
+            if (Core.Input.IsKeyPressed(Keys.S))
             {
                 Persistence += 0.1f;
                 RegenerateMap();
             }
 
-            _devChunkGenerate.Update(gameTime);
+            _devChunkGenerate.Update();
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             SpriteBatch spriteBatch = Engine.Content.Instance.SpriteBatch;
             spriteBatch.Begin();
@@ -83,7 +83,7 @@ namespace Topaz.Scene
 
             spriteBatch.End();
 
-            _devChunkGenerate.Draw(gameTime);
+            _devChunkGenerate.Draw();
         }
 
         public void DrawTile(int tile, Vector2 position)

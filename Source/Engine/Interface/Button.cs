@@ -1,10 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Topaz.Engine.Interface
 {
@@ -31,13 +27,13 @@ namespace Topaz.Engine.Interface
             OnClicked = callback;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             if (!IsDisplaying) return;
 
             if (MouseIsIntersecting())
             {
-                if (Engine.Input.LeftButtonPressed())
+                if (Core.Input.LeftButtonPressed())
                 {
                     IsPressed = true;
                 } 
@@ -55,7 +51,7 @@ namespace Topaz.Engine.Interface
             IsHovered = MouseIsIntersecting();
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             if (!IsDisplaying) return;
 

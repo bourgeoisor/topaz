@@ -38,14 +38,14 @@ namespace Topaz.Interface
             _octaveLabel.SetText("Octave: ");
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
-            _generateButton.Update(gameTime);
+            _generateButton.Update();
 
             _octaveLabel.SetText("Seed: " + _scene.Seed + "\nOctave: " + _scene.Octave + "\nPersistence: " + _scene.Persistence);
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             if (!IsDisplaying) return;
 
@@ -63,9 +63,9 @@ namespace Topaz.Interface
                 0f
             );
 
-            _generateButton.Draw(gameTime);
-            _generateLabel.Draw(gameTime);
-            _octaveLabel.Draw(gameTime);
+            _generateButton.Draw();
+            _generateLabel.Draw();
+            _octaveLabel.Draw();
 
             Engine.Content.Instance.SpriteBatch.End();
         }

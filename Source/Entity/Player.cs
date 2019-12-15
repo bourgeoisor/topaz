@@ -15,14 +15,14 @@ namespace Topaz.Entity
             Sprite = Engine.Content.Instance.GetTexture("Temp/lucas");
         }
 
-        public override void Update(GameTime gameTime)
+        public override void Update()
         {
-            base.Update(gameTime);
+            base.Update();
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw()
         {
-            base.Draw(gameTime);
+            base.Draw();
         }
     }
 }

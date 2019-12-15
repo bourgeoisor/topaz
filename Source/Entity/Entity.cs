@@ -8,6 +8,7 @@ namespace Topaz.Entity
     {
         public const float OFFSET_TOLERANCE = 0.15f;
 
+        public Engine.Core Core = Engine.Core.Instance;
         public Engine.Logger Logger { get; set; }
 
         public Texture2D Sprite { get; set; }
@@ -44,15 +45,15 @@ namespace Topaz.Entity
             SouthEast
         }
 
-        public virtual void Update(GameTime gameTime)
+        public virtual void Update()
         {
             if (MovementDirection == Direction.None)
                 return;
 
-            AnimationFrame += (float)gameTime.ElapsedGameTime.TotalSeconds * 5;
+            AnimationFrame += (float)Core.Time.ElapsedGameTime.TotalSeconds * 5;
             if (AnimationFrame >= 4) AnimationFrame = 0;
 
-            float deltaMovementAxis = Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float deltaMovementAxis = Speed * (float)Core.Time.ElapsedGameTime.TotalSeconds;
             float deltaMovementDiag = 0.7f * deltaMovementAxis;
 
             Vector2 delta = new Vector2(0, 0);
@@ -104,7 +105,7 @@ namespace Topaz.Entity
             delta = GetDeltaBeforeCollision(this, delta);
         }
 
-        public virtual void Draw(GameTime gameTime)
+        public virtual void Draw()
         {
             int step = (int)Math.Floor(AnimationFrame);
             if (step == 3) step = 1;

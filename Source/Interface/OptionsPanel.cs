@@ -64,17 +64,17 @@ namespace Topaz.Interface
             }
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             if (!IsDisplaying) return;
             if (!MouseIsIntersecting()) return;
 
-            _musicMuteCheckbox.Update(gameTime);
-            _soundsMuteCheckbox.Update(gameTime);
-            _fullscreenCheckbox.Update(gameTime);
+            _musicMuteCheckbox.Update();
+            _soundsMuteCheckbox.Update();
+            _fullscreenCheckbox.Update();
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             if (!IsDisplaying) return;
 
@@ -92,14 +92,14 @@ namespace Topaz.Interface
                 0f
             );
 
-            _musicMuteCheckbox.Draw(gameTime);
-            _musicMuteLabel.Draw(gameTime);
+            _musicMuteCheckbox.Draw();
+            _musicMuteLabel.Draw();
 
-            _soundsMuteCheckbox.Draw(gameTime);
-            _soundsMuteLabel.Draw(gameTime);
+            _soundsMuteCheckbox.Draw();
+            _soundsMuteLabel.Draw();
 
-            _fullscreenCheckbox.Draw(gameTime);
-            _fullscreenLabel.Draw(gameTime);
+            _fullscreenCheckbox.Draw();
+            _fullscreenLabel.Draw();
 
             Engine.Content.Instance.SpriteBatch.End();
         }

@@ -12,11 +12,11 @@ namespace Topaz.Engine.Interface
             Parent = parent;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             Engine.Content.Instance.SpriteBatch.DrawString(
                 Content.Instance.Font,

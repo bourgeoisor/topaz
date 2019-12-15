@@ -17,6 +17,8 @@ namespace Topaz.Engine
         public Settings Settings { get; set; }
         public GraphicsDeviceManager Graphics { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }
+        public Time Time { get; private set; }
+        public Input Input { get; private set; }
 
         public enum EngineState { Running, Terminating }
 
@@ -64,6 +66,9 @@ namespace Topaz.Engine
             Game.IsFixedTimeStep = false;
             Graphics.SynchronizeWithVerticalRetrace = Settings.Video.Vsync;
 
+            Time = new Time();
+            Input = new Input();
+
             ToggleFullscreen(Settings.Video.Fullscreen);
 
             Engine.Content.Instance.Initialize(game, graphics);
@@ -81,14 +86,18 @@ namespace Topaz.Engine
 
         public void Update(GameTime gameTime)
         {
-            if (Engine.Input.IsKeyDown(Keys.Escape))
+            Time.Update(gameTime);
+
+            if (Input.IsKeyDown(Keys.Escape))
                 State = EngineState.Terminating;
 
-            if (Engine.Input.IsKeyDown(Keys.LeftControl) && Engine.Input.IsKeyDown(Keys.Enter))
+            if (Input.IsKeyDown(Keys.LeftControl) && Input.IsKeyDown(Keys.Enter))
                 ToggleFullscreen(!Graphics.IsFullScreen);
+
+            Input.Update();
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
         }

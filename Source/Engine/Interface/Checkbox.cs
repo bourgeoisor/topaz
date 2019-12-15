@@ -39,13 +39,13 @@ namespace Topaz.Engine.Interface
             OnUnchecked = callback;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             if (!IsDisplaying) return;
 
             if (MouseIsIntersecting())
             {
-                if (Engine.Input.LeftButtonPressed())
+                if (Core.Input.LeftButtonPressed())
                 {
                     IsChecked = !IsChecked;
 
@@ -59,7 +59,7 @@ namespace Topaz.Engine.Interface
             IsHovered = MouseIsIntersecting();
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw()
         {
             if (!IsDisplaying) return;
 
